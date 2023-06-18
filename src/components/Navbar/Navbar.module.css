@@ -1,0 +1,41 @@
+.navbar {
+  background: #D9D9D9;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  margin: 0;
+}
+
+.navbarContainer {
+  margin: 0;
+  width: 100%;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+}
+
+.logoImage {
+  max-height: 40px;
+}
+
+.buttonContainer {
+  display: flex;
+  align-items: center;
+  margin-right: 16px;
+}
+
+.link {
+  cursor: pointer;
+  text-decoration: underline;
+  color: inherit;
+}
