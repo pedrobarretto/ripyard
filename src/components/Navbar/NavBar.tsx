@@ -5,6 +5,8 @@ import Image from 'next/image';
 import styles from './Navbar.module.css';
 import { Button } from '@chakra-ui/react';
 import { usePathname } from 'next/navigation';
+import { auth } from '@/config/firebase';
+import { signOut } from 'firebase/auth';
 
 export function NavBar() {
   const pathname = usePathname();
@@ -24,7 +26,24 @@ export function NavBar() {
           </div>
         </Link>
       </div>
-      {pathname !== '/login' && (
+      {auth.currentUser ? (
+        <div className={styles.buttonContainer}>
+          <Button
+            as={'a'}
+            href='/'
+            colorScheme='custom'
+            _hover={{
+              backgroundColor: 'gray.buttonHover',
+              boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)',
+            }}
+            backgroundColor='gray.button'
+            color='text.white'
+            onClick={() => signOut(auth)}
+          >
+            Logout
+          </Button>
+        </div>
+      ) : (
         <div className={styles.buttonContainer}>
           <Button
             as={'a'}

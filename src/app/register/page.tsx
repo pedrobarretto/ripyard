@@ -1,10 +1,11 @@
 'use client';
 import { CustomButton } from '@/components';
 import { Container, Input, Link } from '@chakra-ui/react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { useState } from 'react';
-import { auth } from '../../config/firebase';
+import { auth, db } from '../../config/firebase';
 import { useRouter } from 'next/navigation';
+import { doc, setDoc } from 'firebase/firestore';
 
 export default function Page() {
   const [email, setEmail] = useState('');
@@ -13,7 +14,12 @@ export default function Page() {
 
   const handleLogin = async () => {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const info = await createUserWithEmailAndPassword(auth, email, password);
+      await setDoc(doc(db, 'users', info.user.uid), {
+        email,
+        createdAt: new Date(),
+        id: info.user.uid,
+      });
       router.push('/');
     } catch (error) {
       console.log(error);
@@ -55,10 +61,10 @@ export default function Page() {
           value={password}
           onChange={(event) => setPassword(event.target.value)}
         />
-        <CustomButton text='Entrar' onClick={handleLogin} width={'sm'} />
+        <CustomButton text='Criar' onClick={handleLogin} width={'sm'} />
         <div style={{ textAlign: 'center' }}>
-          <p>Ainda não criou sua conta?</p>
-          <Link href='/register'>Registrar</Link>
+          <p>Já tem uma conta?</p>
+          <Link href='/login'>Faça o login aqui!</Link>
         </div>
       </Container>
     </div>
