@@ -1,19 +1,43 @@
 'use client';
 import { auth } from '@/config/firebase';
+import { useUser } from '@/hooks';
 import { onAuthStateChanged } from 'firebase/auth';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function Page() {
+  const { rawUser, setRawUser } = useUser();
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       console.log('Auth has changed');
       if (user) {
+        setRawUser(user);
         console.log(`Setting user ${user.email}`);
       } else {
         console.log('Not logged in');
       }
+      setLoading(false);
     });
+
+    return () => unsubscribe();
   }, []);
 
-  return <h1>Hello, Home Page!</h1>;
+  if (loading) {
+    return <div>Carregando...</div>;
+  }
+
+  return (
+    <>
+      {rawUser?.email ? (
+        <div>
+          <h1>Logado como {rawUser.email}</h1>
+        </div>
+      ) : (
+        <div>
+          <h1>Não logado!</h1>
+        </div>
+      )}
+    </>
+  );
 }

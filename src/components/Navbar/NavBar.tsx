@@ -4,12 +4,12 @@ import Link from 'next/link';
 import Image from 'next/image';
 import styles from './Navbar.module.css';
 import { Button } from '@chakra-ui/react';
-import { usePathname } from 'next/navigation';
 import { auth } from '@/config/firebase';
 import { signOut } from 'firebase/auth';
+import { useUser } from '@/hooks';
 
 export function NavBar() {
-  const pathname = usePathname();
+  const { rawUser } = useUser();
 
   return (
     <nav className={styles.navbar}>
@@ -26,7 +26,7 @@ export function NavBar() {
           </div>
         </Link>
       </div>
-      {auth.currentUser ? (
+      {rawUser.email ? (
         <div className={styles.buttonContainer}>
           <Button
             as={'a'}
@@ -45,19 +45,19 @@ export function NavBar() {
         </div>
       ) : (
         <div className={styles.buttonContainer}>
-          <Button
-            as={'a'}
-            href='/login'
-            colorScheme='custom'
-            _hover={{
-              backgroundColor: 'gray.buttonHover',
-              boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)',
-            }}
-            backgroundColor='gray.button'
-            color='text.white'
-          >
-            Entrar
-          </Button>
+          <Link href='/login' passHref>
+            <Button
+              colorScheme='custom'
+              _hover={{
+                backgroundColor: 'gray.buttonHover',
+                boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)',
+              }}
+              backgroundColor='gray.button'
+              color='text.white'
+            >
+              Entrar
+            </Button>
+          </Link>
         </div>
       )}
     </nav>
