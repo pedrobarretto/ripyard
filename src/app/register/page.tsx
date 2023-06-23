@@ -9,14 +9,16 @@ import { doc, setDoc } from 'firebase/firestore';
 
 export default function Page() {
   const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter();
 
-  const handleLogin = async () => {
+  const handleRegister = async () => {
     try {
       const info = await createUserWithEmailAndPassword(auth, email, password);
       await setDoc(doc(db, 'users', info.user.uid), {
         email,
+        username,
         createdAt: new Date(),
         id: info.user.uid,
       });
@@ -56,12 +58,19 @@ export default function Page() {
         />
         <Input
           variant='filled'
+          placeholder='Usuário'
+          width='sm'
+          value={username}
+          onChange={(event) => setUsername(event.target.value)}
+        />
+        <Input
+          variant='filled'
           placeholder='Senha'
           width='sm'
           value={password}
           onChange={(event) => setPassword(event.target.value)}
         />
-        <CustomButton text='Criar' onClick={handleLogin} width={'sm'} />
+        <CustomButton text='Criar' onClick={handleRegister} width={'sm'} />
         <div style={{ textAlign: 'center' }}>
           <p>Já tem uma conta?</p>
           <Link href='/login'>Faça o login aqui!</Link>
