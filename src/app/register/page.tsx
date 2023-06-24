@@ -6,11 +6,13 @@ import { useState } from 'react';
 import { auth, db } from '../../config/firebase';
 import { useRouter } from 'next/navigation';
 import { doc, setDoc } from 'firebase/firestore';
+import { useUser } from '@/hooks';
 
 export default function Page() {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const { setUser } = useUser();
   const router = useRouter();
 
   const handleRegister = async () => {
@@ -19,9 +21,11 @@ export default function Page() {
       await setDoc(doc(db, 'users', info.user.uid), {
         email,
         username,
+        groups: [{}],
         createdAt: new Date(),
         id: info.user.uid,
       });
+      setUser({ email, username });
       router.push('/');
     } catch (error) {
       console.log(error);

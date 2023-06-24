@@ -5,11 +5,16 @@ import Image from 'next/image';
 import styles from './Navbar.module.css';
 import { Button } from '@chakra-ui/react';
 import { auth } from '@/config/firebase';
-import { signOut } from 'firebase/auth';
+import { User, signOut } from 'firebase/auth';
 import { useUser } from '@/hooks';
 
 export function NavBar() {
-  const { rawUser } = useUser();
+  const { rawUser, setRawUser } = useUser();
+
+  const handlesignOut = () => {
+    setRawUser({} as User);
+    signOut(auth);
+  };
 
   return (
     <nav className={styles.navbar}>
@@ -28,20 +33,20 @@ export function NavBar() {
       </div>
       {rawUser.email ? (
         <div className={styles.buttonContainer}>
-          <Button
-            as={'a'}
-            href='/'
-            colorScheme='custom'
-            _hover={{
-              backgroundColor: 'gray.buttonHover',
-              boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)',
-            }}
-            backgroundColor='gray.button'
-            color='text.white'
-            onClick={() => signOut(auth)}
-          >
-            Logout
-          </Button>
+          <Link href='/' passHref>
+            <Button
+              colorScheme='custom'
+              _hover={{
+                backgroundColor: 'gray.buttonHover',
+                boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)',
+              }}
+              backgroundColor='gray.button'
+              color='text.white'
+              onClick={handlesignOut}
+            >
+              Logout
+            </Button>
+          </Link>
         </div>
       ) : (
         <div className={styles.buttonContainer}>

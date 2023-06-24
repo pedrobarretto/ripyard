@@ -9,6 +9,8 @@ const colors = {
   gray: {
     button: '#969696',
     buttonHover: '#646464',
+    text: '#717171',
+    input: '#EBEBEB',
   },
   text: {
     white: '#fff',
