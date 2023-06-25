@@ -1,8 +1,8 @@
 'use client';
 import { CustomButton, Phrase } from '@/components';
 import { auth, db } from '@/config/firebase';
-import { User } from '@/interfaces';
-import { useUser } from '@/hooks';
+import { Group, User } from '@/interfaces';
+import { useGroups, useUser } from '@/hooks';
 import { Container, Text, VStack } from '@chakra-ui/react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react';
 
 export default function Page() {
   const { rawUser, setRawUser, setUser } = useUser();
+  const { setGroups, groups } = useGroups();
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -20,8 +21,18 @@ export default function Page() {
       console.log('Auth has changed');
       if (user) {
         setRawUser(user);
-        const userDoc = await getDoc(doc(db, 'users', user.uid));
-        setUser(userDoc.data() as User);
+        const userData = (
+          await getDoc(doc(db, 'users', user.uid))
+        ).data() as User;
+        console.log(userData.groups);
+        userData.groups.map(async (group) => {
+          const groupData = await getDoc(doc(db, 'groups', group.groupId));
+          console.log('groupData: ', groupData.data());
+          setGroups((state: Group[]) => {
+            return [...state, groupData.data() as Group];
+          });
+        });
+        setUser(userData);
         console.log(`Setting user ${user.email}`);
       } else {
         console.log('Not logged in');
@@ -31,6 +42,10 @@ export default function Page() {
 
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    console.log('Updated groups:', groups);
+  }, [groups]);
 
   const handleButton = () => {
     if (rawUser.email) {

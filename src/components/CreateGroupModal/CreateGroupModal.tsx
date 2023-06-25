@@ -12,8 +12,8 @@ import { useState } from 'react';
 import { CustomButton, CustomInput } from '..';
 import { addDoc, collection, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/config/firebase';
-import { useUser } from '@/hooks';
-import { User } from '@/interfaces';
+import { useGroups, useUser } from '@/hooks';
+import { Group, User } from '@/interfaces';
 
 interface CreateGroupModalProps {
   isOpen: boolean;
@@ -23,26 +23,29 @@ interface CreateGroupModalProps {
 export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
   const [groupName, setGroupName] = useState('');
   const { rawUser, user } = useUser();
+  const { groups, setGroups } = useGroups();
 
   const createGroup = async () => {
     console.log(user);
     const userRef = doc(db, 'users', rawUser.uid);
-    const group = await addDoc(collection(db, 'groups'), {
+    const groupData: Group = {
       members: [
         {
-          email: rawUser.email,
+          email: user.email,
           userId: rawUser.uid,
           username: user.username,
         },
       ],
       name: groupName,
-      ownerUsername: user.username,
-      ownerEmail: rawUser.email,
+      ownerName: user.username,
+      ownerEmail: user.email,
       ownerId: rawUser.uid,
       createdAt: new Date(),
-    });
+    };
+    const group = await addDoc(collection(db, 'groups'), groupData);
     const userDoc = await getDoc(userRef);
     const userData = userDoc.data() as User;
+    console.log(userData);
     await updateDoc(userRef, {
       groups: [
         ...userData.groups,
@@ -52,6 +55,8 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
         },
       ],
     });
+    setGroups([...groups, groupData]);
+    onClose();
   };
 
   return (

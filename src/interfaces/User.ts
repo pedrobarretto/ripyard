@@ -7,6 +7,6 @@ export interface User {
 }
 
 export interface UserGroup {
-  id: string;
+  groupId: string;
   username: string;
 }

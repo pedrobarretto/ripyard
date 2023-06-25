@@ -1,6 +1,6 @@
 'use client';
 
-import { UserProvider } from '@/context';
+import { GroupsProvider, UserProvider } from '@/context';
 import { CacheProvider } from '@chakra-ui/next-js';
 import { ChakraProvider, withDefaultColorScheme } from '@chakra-ui/react';
 import { extendTheme } from '@chakra-ui/react';
@@ -11,6 +11,7 @@ const colors = {
     buttonHover: '#646464',
     text: '#717171',
     input: '#EBEBEB',
+    phrase: '#BEBEBE',
   },
   text: {
     white: '#fff',
@@ -37,10 +38,12 @@ const theme = extendTheme(
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <UserProvider>
-      <CacheProvider>
-        <ChakraProvider theme={theme}>{children}</ChakraProvider>
-      </CacheProvider>
-    </UserProvider>
+    <GroupsProvider>
+      <UserProvider>
+        <CacheProvider>
+          <ChakraProvider theme={theme}>{children}</ChakraProvider>
+        </CacheProvider>
+      </UserProvider>
+    </GroupsProvider>
   );
 }

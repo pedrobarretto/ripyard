@@ -4,6 +4,7 @@ export interface Group {
   ownerEmail: string;
   ownerId: string;
   members: Members[];
+  createdAt: Date;
 }
 
 export interface Members {
