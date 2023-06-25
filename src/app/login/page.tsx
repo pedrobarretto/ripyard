@@ -14,7 +14,7 @@ import { auth, db } from '../../config/firebase';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/hooks';
 import { doc, getDoc } from 'firebase/firestore';
-import { User } from '@/context';
+import { User } from '@/interfaces';
 
 export default function Page() {
   const [email, setEmail] = useState('');
@@ -30,10 +30,7 @@ export default function Page() {
       const info = await signInWithEmailAndPassword(auth, email, password);
       const user = await getDoc(doc(db, 'users', info.user.uid));
       if (user.exists()) {
-        setUser({
-          email: String(info.user.email),
-          username: user.data().username,
-        });
+        setUser(user.data() as User);
       } else {
         setUser({} as User);
       }

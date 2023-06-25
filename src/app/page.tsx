@@ -1,15 +1,17 @@
 'use client';
 import { CustomButton, Phrase } from '@/components';
-import { auth } from '@/config/firebase';
+import { auth, db } from '@/config/firebase';
+import { User } from '@/interfaces';
 import { useUser } from '@/hooks';
 import { Container, Text, VStack } from '@chakra-ui/react';
 import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function Page() {
-  const { rawUser, setRawUser } = useUser();
+  const { rawUser, setRawUser, setUser } = useUser();
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -18,6 +20,8 @@ export default function Page() {
       console.log('Auth has changed');
       if (user) {
         setRawUser(user);
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        setUser(userDoc.data() as User);
         console.log(`Setting user ${user.email}`);
       } else {
         console.log('Not logged in');

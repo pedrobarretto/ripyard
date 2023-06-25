@@ -7,13 +7,13 @@ import {
   ModalCloseButton,
   ModalBody,
   ModalFooter,
-  Button,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { CustomButton, CustomInput } from '..';
-import { doc, setDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/config/firebase';
 import { useUser } from '@/hooks';
+import { User } from '@/interfaces';
 
 interface CreateGroupModalProps {
   isOpen: boolean;
@@ -26,27 +26,32 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
 
   const createGroup = async () => {
     console.log(user);
-    await setDoc(
-      doc(
-        db,
-        'groups',
-        `${rawUser.uid}-${groupName.trim().replace(/\s/g, '')}`
-      ),
-      {
-        members: [
-          {
-            email: rawUser.email,
-            userId: rawUser.uid,
-            username: user.username,
-          },
-        ],
-        name: groupName,
-        ownerUsername: user.username,
-        ownerEmail: rawUser.email,
-        ownerId: rawUser.uid,
-        createdAt: new Date(),
-      }
-    );
+    const userRef = doc(db, 'users', rawUser.uid);
+    const group = await addDoc(collection(db, 'groups'), {
+      members: [
+        {
+          email: rawUser.email,
+          userId: rawUser.uid,
+          username: user.username,
+        },
+      ],
+      name: groupName,
+      ownerUsername: user.username,
+      ownerEmail: rawUser.email,
+      ownerId: rawUser.uid,
+      createdAt: new Date(),
+    });
+    const userDoc = await getDoc(userRef);
+    const userData = userDoc.data() as User;
+    await updateDoc(userRef, {
+      groups: [
+        ...userData.groups,
+        {
+          groupName,
+          groupId: group.id,
+        },
+      ],
+    });
   };
 
   return (
@@ -63,7 +68,11 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
           />
         </ModalBody>
         <ModalFooter>
-          <CustomButton text='Criar Grupo' onClick={createGroup} />
+          <CustomButton
+            disabled={groupName.length === 0}
+            text='Criar Grupo'
+            onClick={createGroup}
+          />
         </ModalFooter>
       </ModalContent>
     </Modal>

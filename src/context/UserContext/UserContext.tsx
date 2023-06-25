@@ -1,5 +1,6 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
 import { User as FirebaseUser } from '@firebase/auth';
+import { User } from '@/interfaces';
 
 interface UserProviderProps {
   children: ReactNode;
@@ -10,11 +11,6 @@ interface UserContextData {
   setRawUser: (user: FirebaseUser) => void;
   user: User;
   setUser: (user: User) => void;
-}
-
-export interface User {
-  email: string;
-  username: string;
 }
 
 export const UserContext = createContext({} as UserContextData);
