@@ -5,6 +5,7 @@ export interface Group {
   ownerId: string;
   members: Members[];
   createdAt: Date;
+  groupId: string;
 }
 
 export interface Members {

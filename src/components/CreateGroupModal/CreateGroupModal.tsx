@@ -12,7 +12,7 @@ import { useState } from 'react';
 import { CustomButton, CustomInput } from '..';
 import { addDoc, collection, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/config/firebase';
-import { useGroups, useUser } from '@/hooks';
+import { useGroups, useUser } from '@/store';
 import { Group, User } from '@/interfaces';
 
 interface CreateGroupModalProps {
@@ -26,7 +26,7 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
   const { groups, setGroups } = useGroups();
 
   const createGroup = async () => {
-    console.log(user);
+    console.log(rawUser);
     const userRef = doc(db, 'users', rawUser.uid);
     const groupData: Group = {
       members: [
@@ -41,11 +41,12 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
       ownerEmail: user.email,
       ownerId: rawUser.uid,
       createdAt: new Date(),
+      groupId: '',
     };
     const group = await addDoc(collection(db, 'groups'), groupData);
+    await updateDoc(doc(db, 'groups', group.id), { groupId: group.id });
     const userDoc = await getDoc(userRef);
     const userData = userDoc.data() as User;
-    console.log(userData);
     await updateDoc(userRef, {
       groups: [
         ...userData.groups,

@@ -1,47 +1,15 @@
 'use client';
 import { CustomButton, Phrase } from '@/components';
-import { auth, db } from '@/config/firebase';
-import { Group, User } from '@/interfaces';
-import { useGroups, useUser } from '@/hooks';
+import { useGroups, useUser } from '@/store';
 import { Container, Text, VStack } from '@chakra-ui/react';
-import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 export default function Page() {
-  const { rawUser, setRawUser, setUser } = useUser();
-  const { setGroups, groups } = useGroups();
-  const [loading, setLoading] = useState(true);
+  const { rawUser } = useUser();
+  const { groups } = useGroups();
   const router = useRouter();
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      console.log('Auth has changed');
-      if (user) {
-        setRawUser(user);
-        const userData = (
-          await getDoc(doc(db, 'users', user.uid))
-        ).data() as User;
-        console.log(userData.groups);
-        userData.groups.map(async (group) => {
-          const groupData = await getDoc(doc(db, 'groups', group.groupId));
-          console.log('groupData: ', groupData.data());
-          setGroups((state: Group[]) => {
-            return [...state, groupData.data() as Group];
-          });
-        });
-        setUser(userData);
-        console.log(`Setting user ${user.email}`);
-      } else {
-        console.log('Not logged in');
-      }
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
 
   useEffect(() => {
     console.log('Updated groups:', groups);
@@ -65,7 +33,7 @@ export default function Page() {
     );
   };
 
-  if (loading) {
+  if (!rawUser.uid) {
     return <div>Carregando...</div>;
   }
 

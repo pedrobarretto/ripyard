@@ -2,32 +2,13 @@
 import { AddIcon } from '@chakra-ui/icons';
 import { Button, Flex, Text, useDisclosure } from '@chakra-ui/react';
 import { CreateGroupModal, NoneData } from '..';
-import { useGroups, useUser } from '@/hooks';
+import { useGroups } from '@/store';
 import { GroupComponent } from './Group';
-import { doc, getDoc } from 'firebase/firestore';
 import { Group } from '@/interfaces';
-import { db } from '@/config/firebase';
-import { useEffect } from 'react';
 
 export function GroupsBar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { groups, setGroups } = useGroups();
-  const { user } = useUser();
-
-  const onStart = async () => {
-    setGroups([]);
-    user.groups.map(async (group) => {
-      const groupData = await getDoc(doc(db, 'groups', group.groupId));
-      console.log('groupData: ', groupData.data());
-      setGroups((state: Group[]) => {
-        return [...state, groupData.data() as Group];
-      });
-    });
-  };
-
-  useEffect(() => {
-    onStart();
-  }, []);
+  const { groups, setSelectedGroup } = useGroups();
 
   return (
     <div
@@ -42,12 +23,7 @@ export function GroupsBar() {
         flexDirection: 'column',
       }}
     >
-      <Flex
-        align={'center'}
-        justify={'space-between'}
-        padding={4}
-        // marginBottom={5}
-      >
+      <Flex align={'center'} justify={'space-between'} padding={4}>
         <Text fontSize={'xl'} color='gray.text' textAlign='center'>
           Grupos
         </Text>
@@ -76,7 +52,13 @@ export function GroupsBar() {
         <NoneData text='Crie um grupo e convide seus amigos!' />
       ) : (
         groups.map((group) => {
-          return <GroupComponent group={group} key={group.name} />;
+          return (
+            <GroupComponent
+              group={group}
+              key={group.groupId}
+              onClick={setSelectedGroup}
+            />
+          );
         })
       )}
 

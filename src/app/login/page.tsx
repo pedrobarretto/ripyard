@@ -12,7 +12,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useState } from 'react';
 import { auth, db } from '../../config/firebase';
 import { useRouter } from 'next/navigation';
-import { useUser } from '@/hooks';
+import { useUser } from '@/store';
 import { doc, getDoc } from 'firebase/firestore';
 import { User } from '@/interfaces';
 

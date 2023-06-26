@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { auth, db } from '../../config/firebase';
 import { useRouter } from 'next/navigation';
 import { doc, setDoc } from 'firebase/firestore';
-import { useUser } from '@/hooks';
+import { useUser } from '@/store';
 
 export default function Page() {
   const [email, setEmail] = useState('');
