@@ -2,9 +2,9 @@
 import { AddIcon } from '@chakra-ui/icons';
 import { Button, Flex, Text, useDisclosure } from '@chakra-ui/react';
 import { CreateGroupModal, NoneData } from '..';
-import { useGroups } from '@/store';
+import { useGroups, useMessages } from '@/store';
 import { GroupComponent } from './Group';
-import { Group } from '@/interfaces';
+import { useEffect } from 'react';
 
 export function GroupsBar() {
   const { isOpen, onOpen, onClose } = useDisclosure();

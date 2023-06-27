@@ -42,8 +42,10 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
       ownerId: rawUser.uid,
       createdAt: new Date(),
       groupId: '',
+      messages: [],
     };
     const group = await addDoc(collection(db, 'groups'), groupData);
+    groupData.groupId = group.id;
     await updateDoc(doc(db, 'groups', group.id), { groupId: group.id });
     const userDoc = await getDoc(userRef);
     const userData = userDoc.data() as User;
@@ -57,6 +59,7 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
       ],
     });
     setGroups([...groups, groupData]);
+    setGroupName('');
     onClose();
   };
 

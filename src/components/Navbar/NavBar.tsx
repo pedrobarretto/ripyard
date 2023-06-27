@@ -10,29 +10,53 @@ import {
   onAuthStateChanged,
   signOut,
 } from 'firebase/auth';
-import { useGroups, useUser } from '@/store';
-import { Group, User } from '@/interfaces';
+import { useGroups, useMessages, useUser } from '@/store';
+import { Group, Message, User } from '@/interfaces';
 import { getDoc, doc } from 'firebase/firestore';
 
 export function NavBar() {
   const { rawUser, setRawUser, setUser } = useUser();
   const { setGroups, groups } = useGroups();
+  const { mountMessage, messages, setRawMessages } = useMessages();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       console.log('Auth has changed');
       if (user) {
         setRawUser(user);
+
         const userData = (
           await getDoc(doc(db, 'users', user.uid))
         ).data() as User;
-        console.log(userData.groups);
-        userData.groups.map(async (group) => {
-          const groupData = await getDoc(doc(db, 'groups', group.groupId));
-          console.log('groupData: ', groupData.data());
-          setGroups([...groups, groupData.data() as Group]);
-        });
         setUser(userData);
+
+        const grpPromises = userData.groups.map((group) => {
+          return getDoc(doc(db, 'groups', group.groupId));
+        });
+        const grpData = await Promise.all(grpPromises);
+        const grpLst = grpData.map(
+          (groupData) => JSON.parse(JSON.stringify(groupData.data())) as Group
+        );
+        setGroups(grpLst);
+
+        const messagesPromises = grpLst.map((group) => {
+          return group.messages.map((msg) => {
+            if (msg) return getDoc(doc(db, 'messages', msg));
+            return Promise.resolve(undefined);
+          });
+        });
+
+        const msgData = await Promise.all(messagesPromises.flat());
+        const msgLst = msgData
+          .filter((listData) => listData !== undefined)
+          .map(
+            (listData) =>
+              JSON.parse(JSON.stringify(listData?.data())) as Message
+          );
+        console.log('msgLst: ', msgLst);
+
+        mountMessage(msgLst, groups);
+        setRawMessages(msgLst);
         console.log(`Setting user ${user.email}`);
       } else {
         console.log('Not logged in');
@@ -41,6 +65,10 @@ export function NavBar() {
 
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    console.log('new msgs: ', messages);
+  }, [messages]);
 
   const handlesignOut = () => {
     setRawUser({} as FirebaseUser);

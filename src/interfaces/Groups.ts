@@ -6,6 +6,7 @@ export interface Group {
   members: Members[];
   createdAt: Date;
   groupId: string;
+  messages: string[];
 }
 
 export interface Members {
