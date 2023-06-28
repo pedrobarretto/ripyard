@@ -18,9 +18,7 @@ export const useMessages = create<MessagesState>((set) => ({
     const messagesContext: MessagesContext[] = [];
 
     groups.forEach((group, index) => {
-      console.log('group.messages[index]: ', group.messages[index]);
       const filteredMsgs = msgs.filter((msg) => {
-        console.log('msg.messageId: ', msg.messageId);
         return msg.messageId === group.messages[index];
       });
       messagesContext.push({
@@ -28,8 +26,6 @@ export const useMessages = create<MessagesState>((set) => ({
         messages: filteredMsgs,
       });
     });
-
-    console.log('messagesContext: ', messagesContext);
 
     set(() => ({ messages: messagesContext }));
   },

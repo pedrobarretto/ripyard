@@ -1,14 +1,17 @@
 'use client';
-import { AddIcon } from '@chakra-ui/icons';
-import { Button, Flex, Text, useDisclosure } from '@chakra-ui/react';
-import { CreateGroupModal, NoneData } from '..';
-import { useGroups, useMessages } from '@/store';
+import { AddIcon, EmailIcon, BellIcon } from '@chakra-ui/icons';
+import { Button, Flex, Stack, Text, useDisclosure } from '@chakra-ui/react';
+import { CreateGroupModal, InviteModal, NoneData } from '..';
+import { useGroups, useInvites } from '@/store';
 import { GroupComponent } from './Group';
-import { useEffect } from 'react';
+import { CheckInvites } from '../InviteModal/CheckInvites';
 
 export function GroupsBar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const inviteModal = useDisclosure();
+  const checkInviteModal = useDisclosure();
   const { groups, setSelectedGroup } = useGroups();
+  const { invites } = useInvites();
 
   return (
     <div
@@ -27,25 +30,70 @@ export function GroupsBar() {
         <Text fontSize={'xl'} color='gray.text' textAlign='center'>
           Grupos
         </Text>
-        <Button
-          colorScheme='custom'
-          _hover={{
-            backgroundColor: 'gray.buttonHover',
-            boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)',
-          }}
-          backgroundColor='gray.button'
-          color='text.white'
-          style={{
-            flexShrink: '0',
-            height: '40px',
-            overflow: 'hidden',
-            width: '40px',
-            borderRadius: 50,
-          }}
-          onClick={onOpen}
-        >
-          <AddIcon boxSize={5} />
-        </Button>
+
+        <Stack spacing={3} direction={'row'}>
+          {invites.length > 0 && (
+            <Button
+              colorScheme='custom'
+              _hover={{
+                backgroundColor: 'gray.buttonHover',
+                boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)',
+              }}
+              backgroundColor='gray.button'
+              color='text.white'
+              style={{
+                flexShrink: '0',
+                height: '40px',
+                overflow: 'hidden',
+                width: '40px',
+                borderRadius: 50,
+              }}
+              onClick={checkInviteModal.onOpen}
+            >
+              <BellIcon boxSize={5} />
+            </Button>
+          )}
+
+          <Button
+            colorScheme='custom'
+            _hover={{
+              backgroundColor: 'gray.buttonHover',
+              boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)',
+            }}
+            backgroundColor='gray.button'
+            color='text.white'
+            style={{
+              flexShrink: '0',
+              height: '40px',
+              overflow: 'hidden',
+              width: '40px',
+              borderRadius: 50,
+            }}
+            onClick={inviteModal.onOpen}
+          >
+            <EmailIcon boxSize={5} />
+          </Button>
+
+          <Button
+            colorScheme='custom'
+            _hover={{
+              backgroundColor: 'gray.buttonHover',
+              boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)',
+            }}
+            backgroundColor='gray.button'
+            color='text.white'
+            style={{
+              flexShrink: '0',
+              height: '40px',
+              overflow: 'hidden',
+              width: '40px',
+              borderRadius: 50,
+            }}
+            onClick={onOpen}
+          >
+            <AddIcon boxSize={5} />
+          </Button>
+        </Stack>
       </Flex>
 
       {groups.length === 0 ? (
@@ -62,7 +110,12 @@ export function GroupsBar() {
         })
       )}
 
+      <CheckInvites
+        isOpen={checkInviteModal.isOpen}
+        onClose={checkInviteModal.onClose}
+      />
       <CreateGroupModal isOpen={isOpen} onClose={onClose} />
+      <InviteModal isOpen={inviteModal.isOpen} onClose={inviteModal.onClose} />
     </div>
   );
 }

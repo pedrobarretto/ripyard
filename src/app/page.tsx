@@ -33,10 +33,6 @@ export default function Page() {
     );
   };
 
-  if (!rawUser.uid) {
-    return <div>Carregando...</div>;
-  }
-
   return (
     <Container centerContent pt={10}>
       <Image

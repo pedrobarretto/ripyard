@@ -18,6 +18,7 @@ export function CustomButton({ text, onClick, ...rest }: ButtonProps) {
       color='text.white'
       onClick={onClick}
       {...rest}
+      disabled={rest.disabled || false}
     >
       {text}
     </Button>

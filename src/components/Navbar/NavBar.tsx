@@ -10,14 +10,15 @@ import {
   onAuthStateChanged,
   signOut,
 } from 'firebase/auth';
-import { useGroups, useMessages, useUser } from '@/store';
-import { Group, Message, User } from '@/interfaces';
+import { useGroups, useInvites, useMessages, useUser } from '@/store';
+import { Group, Invite, Message, User } from '@/interfaces';
 import { getDoc, doc } from 'firebase/firestore';
 
 export function NavBar() {
   const { rawUser, setRawUser, setUser } = useUser();
   const { setGroups, groups } = useGroups();
-  const { mountMessage, messages, setRawMessages } = useMessages();
+  const { mountMessage, setRawMessages } = useMessages();
+  const { setInvites } = useInvites();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -53,10 +54,15 @@ export function NavBar() {
             (listData) =>
               JSON.parse(JSON.stringify(listData?.data())) as Message
           );
-        console.log('msgLst: ', msgLst);
 
         mountMessage(msgLst, groups);
         setRawMessages(msgLst);
+
+        const invitesData = (
+          await getDoc(doc(db, 'invites', userData.id))
+        ).data();
+        setInvites(invitesData ? invitesData.invites : []);
+
         console.log(`Setting user ${user.email}`);
       } else {
         console.log('Not logged in');
@@ -65,10 +71,6 @@ export function NavBar() {
 
     return () => unsubscribe();
   }, []);
-
-  useEffect(() => {
-    console.log('new msgs: ', messages);
-  }, [messages]);
 
   const handlesignOut = () => {
     setRawUser({} as FirebaseUser);

@@ -14,6 +14,14 @@ const colors = {
   text: {
     white: '#fff',
   },
+  green: {
+    accept: '#66ed8a',
+    hover: '#82e89d',
+  },
+  red: {
+    reject: '#de5757',
+    hover: '#ed6f6f',
+  },
 };
 
 const theme = extendTheme(

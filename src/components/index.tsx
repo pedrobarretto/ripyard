@@ -6,3 +6,4 @@ export * from './MessagesContainer/MessagesContainer';
 export * from './CreateGroupModal/CreateGroupModal';
 export * from './Input/CustomInput';
 export * from './NoneData/NoneData';
+export * from './InviteModal/InviteModal';

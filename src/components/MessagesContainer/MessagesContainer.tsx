@@ -12,6 +12,7 @@ import { useGroups, useMessages, useUser } from '@/store';
 import { addDoc, collection, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/config/firebase';
 import { Message, MessagesContext } from '@/interfaces';
+import { Phrase } from '..';
 
 export function MessagesContainer() {
   const [msg, setMsg] = useState('');
@@ -94,9 +95,12 @@ export function MessagesContainer() {
           ) : (
             filteredMessages.map((message) => (
               <div key={`${message.messageId}-${message.message}`}>
-                <Text>
-                  {message.author}: {message.message}
-                </Text>
+                <Phrase
+                  img={'/ripyard-logo.png'}
+                  isFromUser={message.author === user.username}
+                  text={`${message.author}: ${message.message}`}
+                  key={message.messageId}
+                />
               </div>
             ))
           )
