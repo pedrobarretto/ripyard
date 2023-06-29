@@ -23,8 +23,8 @@ export function GroupComponent({ group, onClick }: GroupProps) {
       flexDirection='row'
       alignItems='center'
       justifyContent='space-between'
-      gap={10}
-      margin={10}
+      marginLeft={2}
+      marginRight={2}
       onClick={() => onClick(group)}
       cursor='pointer'
       _hover={{ backgroundColor: 'gray.buttonHover' }}

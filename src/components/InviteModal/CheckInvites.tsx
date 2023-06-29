@@ -14,21 +14,36 @@ import {
 } from '@chakra-ui/react';
 import { useGroups, useInvites, useUser } from '@/store';
 import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { deleteDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/config/firebase';
 import { Group, Invite } from '@/interfaces';
 
 interface CheckInvitesModalProps {
   isOpen: boolean;
   onClose: () => void;
+  setLocalGroups: (groups: Group[]) => void;
 }
 
-export function CheckInvites({ onClose, isOpen }: CheckInvitesModalProps) {
+export function CheckInvites({
+  onClose,
+  isOpen,
+  setLocalGroups,
+}: CheckInvitesModalProps) {
   const { invites, setInvites } = useInvites();
   const { user, setUser } = useUser();
   const { setGroups } = useGroups();
 
   const handleAccept = async (invite: Invite) => {
+    const newInvites = invites.filter((x) => x.groupId !== invite.groupId);
+
+    if (newInvites.length === 0) {
+      await deleteDoc(doc(db, 'invites', user.id));
+    } else {
+      await updateDoc(doc(db, 'invites', user.id), { invites: newInvites });
+    }
+
+    setInvites(newInvites);
+
     const newUserGroups = [
       ...user.groups,
       { groupId: invite.groupId, groupName: invite.groupName },
@@ -45,15 +60,22 @@ export function CheckInvites({ onClose, isOpen }: CheckInvitesModalProps) {
       (groupData) => JSON.parse(JSON.stringify(groupData.data())) as Group
     );
     setGroups(grpLst);
+    setLocalGroups(grpLst);
+
+    if (newInvites.length === 0) onClose();
   };
 
-  const handleDecline = (groupId: string) => {
+  const handleDecline = async (groupId: string) => {
     const newInvites = invites.filter((invite) => invite.groupId !== groupId);
-    setInvites(newInvites);
 
     if (newInvites.length === 0) {
+      await deleteDoc(doc(db, 'invites', user.id));
       onClose();
+    } else {
+      await updateDoc(doc(db, 'invites', user.id), { invites: newInvites });
     }
+
+    setInvites(newInvites);
   };
 
   return (

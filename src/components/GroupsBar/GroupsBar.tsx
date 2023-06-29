@@ -5,6 +5,8 @@ import { CreateGroupModal, InviteModal, NoneData } from '..';
 import { useGroups, useInvites } from '@/store';
 import { GroupComponent } from './Group';
 import { CheckInvites } from '../InviteModal/CheckInvites';
+import { useEffect, useState } from 'react';
+import { Group } from '@/interfaces';
 
 export function GroupsBar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -12,6 +14,11 @@ export function GroupsBar() {
   const checkInviteModal = useDisclosure();
   const { groups, setSelectedGroup } = useGroups();
   const { invites } = useInvites();
+  const [localGroups, setLocalGroups] = useState<Group[]>(groups);
+
+  useEffect(() => {
+    setLocalGroups(groups);
+  }, [groups]);
 
   return (
     <div
@@ -96,23 +103,26 @@ export function GroupsBar() {
         </Stack>
       </Flex>
 
-      {groups.length === 0 ? (
-        <NoneData text='Crie um grupo e convide seus amigos!' />
-      ) : (
-        groups.map((group) => {
-          return (
-            <GroupComponent
-              group={group}
-              key={group.groupId}
-              onClick={setSelectedGroup}
-            />
-          );
-        })
-      )}
+      <Stack spacing={3} direction={'column'}>
+        {localGroups.length === 0 ? (
+          <NoneData text='Crie um grupo e convide seus amigos!' />
+        ) : (
+          localGroups.map((group) => {
+            return (
+              <GroupComponent
+                group={group}
+                key={group.groupId}
+                onClick={setSelectedGroup}
+              />
+            );
+          })
+        )}
+      </Stack>
 
       <CheckInvites
         isOpen={checkInviteModal.isOpen}
         onClose={checkInviteModal.onClose}
+        setLocalGroups={setLocalGroups}
       />
       <CreateGroupModal isOpen={isOpen} onClose={onClose} />
       <InviteModal isOpen={inviteModal.isOpen} onClose={inviteModal.onClose} />
