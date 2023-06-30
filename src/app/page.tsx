@@ -1,22 +1,28 @@
 'use client';
 import { CustomButton, Phrase } from '@/components';
-import { useGroups, useUser } from '@/store';
+import { Message } from '@/interfaces';
+import { useUser } from '@/store';
 import { Container, Text, VStack } from '@chakra-ui/react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { Timestamp } from 'firebase/firestore';
 
 export default function Page() {
   const { rawUser } = useUser();
-  const { groups } = useGroups();
   const router = useRouter();
 
-  useEffect(() => {
-    console.log('Updated groups:', groups);
-  }, [groups]);
+  const mockMsg: Message = {
+    author: '',
+    authorEmail: '',
+    createdAt: Timestamp.fromDate(new Date()),
+    groupId: '',
+    message: '',
+    messageId: '',
+    reactions: [],
+  };
 
   const handleButton = () => {
-    if (rawUser.email) {
+    if (rawUser?.email) {
       return (
         <CustomButton
           text='Ir para meus grupos'
@@ -52,17 +58,35 @@ export default function Page() {
       </Text>
       <VStack spacing={4} mt={8}>
         <Phrase
-          text='Escreva as frases mais marcantes suas e de seus amigos aqui!'
+          message={{
+            ...mockMsg,
+            message:
+              'Escreva as frases mais marcantes suas e de seus amigos aqui!',
+            createdAt: Timestamp.fromDate(new Date()),
+            author: 'Pedro',
+          }}
           img={'/ripyard-logo.png'}
           isFromUser={false}
         />
         <Phrase
-          text='Crie um grupo, adicione seus amigos, e salve seus momentos em texto!'
+          message={{
+            ...mockMsg,
+            message:
+              'Crie um grupo, adicione seus amigos, e salve seus momentos em texto!',
+            createdAt: Timestamp.fromDate(new Date()),
+            author: 'Diego',
+          }}
           img={'/ripyard-logo.png'}
           isFromUser={true}
         />
         <Phrase
-          text='Crie agora sua conta, e convide seus amigos para colecionar frases e risadas!'
+          message={{
+            ...mockMsg,
+            message:
+              'Crie agora sua conta, e convide seus amigos para colecionar frases e risadas!',
+            createdAt: Timestamp.fromDate(new Date()),
+            author: 'Pablo',
+          }}
           img={'/ripyard-logo.png'}
           isFromUser={false}
         />

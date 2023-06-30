@@ -48,15 +48,16 @@ export function NavBar() {
         });
 
         const msgData = await Promise.all(messagesPromises.flat());
-        const msgLst = msgData
-          .filter((listData) => listData !== undefined)
-          .map(
-            (listData) =>
-              JSON.parse(JSON.stringify(listData?.data())) as Message
-          );
-
-        mountMessage(msgLst, groups);
-        setRawMessages(msgLst);
+        if (msgData) {
+          const msgLst = msgData
+            .filter((listData) => listData?.exists())
+            .map(
+              (listData) =>
+                JSON.parse(JSON.stringify(listData?.data())) as Message
+            );
+          mountMessage(msgLst, groups);
+          setRawMessages(msgLst);
+        }
 
         const invitesData = (
           await getDoc(doc(db, 'invites', userData.id))

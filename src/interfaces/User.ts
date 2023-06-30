@@ -1,7 +1,9 @@
+import { Timestamp } from 'firebase/firestore';
+
 export interface User {
   email: string;
   username: string;
-  createdAt: Date;
+  createdAt: Timestamp;
   id: string;
   groups: UserGroup[];
 }

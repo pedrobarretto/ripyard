@@ -1,9 +1,11 @@
+import { Timestamp } from 'firebase/firestore';
+
 export interface Message {
   message: string;
   author: string;
   authorEmail: string;
   groupId: string;
-  createdAt: Date;
+  createdAt: Timestamp;
   reactions: Reactions[];
   messageId: string;
 }
@@ -11,7 +13,7 @@ export interface Message {
 export interface Reactions {
   reactionAuthor: string;
   emoji: any;
-  createdAt: Date;
+  createdAt: Timestamp;
 }
 
 export interface MessagesContext {

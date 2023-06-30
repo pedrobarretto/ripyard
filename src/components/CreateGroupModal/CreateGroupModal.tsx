@@ -10,7 +10,14 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { CustomButton, CustomInput } from '..';
-import { addDoc, collection, doc, getDoc, updateDoc } from 'firebase/firestore';
+import {
+  Timestamp,
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  updateDoc,
+} from 'firebase/firestore';
 import { db } from '@/config/firebase';
 import { useGroups, useUser } from '@/store';
 import { Group, User } from '@/interfaces';
@@ -40,7 +47,7 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
       ownerName: user.username,
       ownerEmail: user.email,
       ownerId: rawUser.uid,
-      createdAt: new Date(),
+      createdAt: Timestamp.fromDate(new Date()),
       groupId: '',
       messages: [],
     };

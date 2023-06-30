@@ -1,18 +1,27 @@
 'use client';
 import { useState, useEffect } from 'react';
 import {
+  Box,
   Button,
   Input,
   InputGroup,
   InputRightElement,
+  Stack,
   Text,
 } from '@chakra-ui/react';
 import { ArrowRightIcon } from '@chakra-ui/icons';
 import { useGroups, useMessages, useUser } from '@/store';
-import { addDoc, collection, doc, updateDoc } from 'firebase/firestore';
+import {
+  Timestamp,
+  addDoc,
+  collection,
+  doc,
+  updateDoc,
+} from 'firebase/firestore';
 import { db } from '@/config/firebase';
 import { Message, MessagesContext } from '@/interfaces';
 import { Phrase } from '..';
+import { formatBrazilDate } from '@/utils';
 
 export function MessagesContainer() {
   const [msg, setMsg] = useState('');
@@ -59,7 +68,7 @@ export function MessagesContainer() {
       author: user.username,
       authorEmail: user.email,
       groupId: selectedGroup.groupId,
-      createdAt: new Date(),
+      createdAt: Timestamp.fromDate(new Date()),
       messageId: '',
       reactions: [],
     };
@@ -88,26 +97,30 @@ export function MessagesContainer() {
         justifyContent: 'space-between',
       }}
     >
-      <div>
+      <Stack
+        direction={'column'}
+        height='846px'
+        overflowY='scroll'
+        borderRadius='md'
+        p={4}
+      >
         {selectedGroup ? (
           filteredMessages.length === 0 ? (
             <Text>Não há frases neste grupo.</Text>
           ) : (
             filteredMessages.map((message) => (
-              <div key={`${message.messageId}-${message.message}`}>
-                <Phrase
-                  img={'/ripyard-logo.png'}
-                  isFromUser={message.author === user.username}
-                  text={`${message.author}: ${message.message}`}
-                  key={message.messageId}
-                />
-              </div>
+              <Phrase
+                img={'/ripyard-logo.png'}
+                isFromUser={message.author === user.username}
+                message={message}
+                key={`${message.messageId}-${message.author}`}
+              />
             ))
           )
         ) : (
           <Text>Selecione um grupo para ver as mensagens.</Text>
         )}
-      </div>
+      </Stack>
       <InputGroup size='md'>
         <Input
           backgroundColor='gray.input'

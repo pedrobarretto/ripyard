@@ -1,22 +1,89 @@
+'use client';
+import { Message } from '@/interfaces';
+import { formatBrazilDate } from '@/utils';
 import Image from 'next/image';
 
 interface PhraseProps {
-  text: string;
   img: any;
   isFromUser: boolean;
+  message: Message;
 }
 
-export function Phrase({ text, img, isFromUser }: PhraseProps) {
+export function Phrase({ message, img, isFromUser }: PhraseProps) {
   const handleComponentOrder = () => {
-    if (isFromUser) {
-      return (
-        <>
-          <Image
-            src={img}
-            alt={'Imagem do autor da frase'}
-            width={40}
-            height={40}
-          />
+    // if (isFromUser) {
+    //   return (
+    //     <>
+    //       <Image
+    //         src={img}
+    //         alt={'Imagem do autor da frase'}
+    //         width={40}
+    //         height={40}
+    //       />
+    //       <div
+    //         className='phrase-text'
+    //         style={{
+    //           background: '#BEBEBE',
+    //           borderRadius: '10px',
+    //           display: 'flex',
+    //           alignItems: 'center',
+    //           justifyContent: 'center',
+    //           flexDirection: 'column',
+    //           padding: 10,
+    //         }}
+    //       >
+    //         <div>
+    //           <span>{message.author}</span>
+    //         </div>
+    //         <span>{message.message}</span>
+    //       </div>
+    //     </>
+    //   );
+    // }
+
+    // return (
+    //   <>
+    //     <div
+    //       style={{
+    //         background: '#BEBEBE',
+    //         borderRadius: '10px',
+    //         display: 'flex',
+    //         alignItems: 'center',
+    //         justifyContent: 'center',
+    //         flexDirection: 'column',
+    //         padding: 10,
+    //         flexGrow: 1,
+    //         overflowWrap: 'break-word',
+    //         wordWrap: 'break-word',
+    //         hyphens: 'auto',
+    //       }}
+    //     >
+    //       <div>
+    //         <span>{message.author}</span>
+    //       </div>
+    //       <span>{message.message}</span>
+    //     </div>
+    //     <Image
+    //       src={img}
+    //       alt={'Imagem do autor da frase'}
+    //       width={40}
+    //       height={40}
+    //     />
+    //   </>
+    // );
+    return (
+      <>
+        <Image
+          src={img}
+          alt={'Imagem do autor da frase'}
+          width={40}
+          height={40}
+        />
+        <div>
+          <span>{message.author} - </span>
+          <span style={{ color: 'gray.text' }}>
+            {formatBrazilDate(message.createdAt)}
+          </span>
           <div
             className='phrase-text'
             style={{
@@ -25,39 +92,13 @@ export function Phrase({ text, img, isFromUser }: PhraseProps) {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              flexDirection: 'column',
               padding: 10,
             }}
           >
-            <span>{text}</span>
+            <span>{message.message}</span>
           </div>
-        </>
-      );
-    }
-
-    return (
-      <>
-        <div
-          style={{
-            background: '#BEBEBE',
-            borderRadius: '10px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 10,
-            flexGrow: 1,
-            overflowWrap: 'break-word',
-            wordWrap: 'break-word',
-            hyphens: 'auto',
-          }}
-        >
-          <span>{text}</span>
         </div>
-        <Image
-          src={img}
-          alt={'Imagem do autor da frase'}
-          width={40}
-          height={40}
-        />
       </>
     );
   };
@@ -65,7 +106,7 @@ export function Phrase({ text, img, isFromUser }: PhraseProps) {
   return (
     <div
       style={{
-        padding: 15,
+        padding: 12,
         height: 'fit-content',
         borderRadius: '10px',
         background: '#D9D9D9',
