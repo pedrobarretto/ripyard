@@ -80,10 +80,10 @@ export function Phrase({ message, img, isFromUser }: PhraseProps) {
           height={40}
         />
         <div>
-          <span>{message.author} - </span>
-          <span style={{ color: 'gray.text' }}>
+          <span>{message.author}</span>
+          {/* <span style={{ color: 'gray.text' }}>
             {formatBrazilDate(message.createdAt)}
-          </span>
+          </span> */}
           <div
             className='phrase-text'
             style={{

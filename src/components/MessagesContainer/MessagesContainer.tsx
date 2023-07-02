@@ -85,8 +85,8 @@ export function MessagesContainer() {
   return (
     <div
       style={{
-        width: '970px',
-        height: '846px',
+        width: '100vw',
+        height: '80vh',
         flexShrink: '0',
         borderRadius: '10px',
         background: '#D9D9D9',
