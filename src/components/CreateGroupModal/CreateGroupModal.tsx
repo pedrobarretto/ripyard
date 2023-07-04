@@ -9,7 +9,7 @@ import {
   ModalFooter,
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { CustomButton, CustomInput } from '..';
+import { CustomButton, CustomInput, LoadingButton } from '..';
 import {
   Timestamp,
   addDoc,
@@ -29,45 +29,51 @@ interface CreateGroupModalProps {
 
 export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
   const [groupName, setGroupName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const { rawUser, user } = useUser();
   const { groups, setGroups } = useGroups();
 
   const createGroup = async () => {
-    console.log(rawUser);
-    const userRef = doc(db, 'users', rawUser.uid);
-    const groupData: Group = {
-      members: [
-        {
-          email: user.email,
-          userId: rawUser.uid,
-          username: user.username,
-        },
-      ],
-      name: groupName,
-      ownerName: user.username,
-      ownerEmail: user.email,
-      ownerId: rawUser.uid,
-      createdAt: Timestamp.fromDate(new Date()),
-      groupId: '',
-      messages: [],
-    };
-    const group = await addDoc(collection(db, 'groups'), groupData);
-    groupData.groupId = group.id;
-    await updateDoc(doc(db, 'groups', group.id), { groupId: group.id });
-    const userDoc = await getDoc(userRef);
-    const userData = userDoc.data() as User;
-    await updateDoc(userRef, {
-      groups: [
-        ...userData.groups,
-        {
-          groupName,
-          groupId: group.id,
-        },
-      ],
-    });
-    setGroups([...groups, groupData]);
-    setGroupName('');
-    onClose();
+    setIsLoading(true);
+    try {
+      const userRef = doc(db, 'users', rawUser.uid);
+      const groupData: Group = {
+        members: [
+          {
+            email: user.email,
+            userId: rawUser.uid,
+            username: user.username,
+          },
+        ],
+        name: groupName,
+        ownerName: user.username,
+        ownerEmail: user.email,
+        ownerId: rawUser.uid,
+        createdAt: Timestamp.fromDate(new Date()),
+        groupId: '',
+        messages: [],
+      };
+      const group = await addDoc(collection(db, 'groups'), groupData);
+      groupData.groupId = group.id;
+      await updateDoc(doc(db, 'groups', group.id), { groupId: group.id });
+      const userDoc = await getDoc(userRef);
+      const userData = userDoc.data() as User;
+      await updateDoc(userRef, {
+        groups: [
+          ...userData.groups,
+          {
+            groupName,
+            groupId: group.id,
+          },
+        ],
+      });
+      setGroups([...groups, groupData]);
+      setGroupName('');
+      onClose();
+    } catch (error) {
+      console.log(error);
+    }
+    setIsLoading(false);
   };
 
   return (
@@ -84,10 +90,12 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
           />
         </ModalBody>
         <ModalFooter>
-          <CustomButton
-            disabled={groupName.length === 0}
+          <LoadingButton
+            width={'xm'}
+            isLoading={isLoading}
             text='Criar Grupo'
             onClick={createGroup}
+            isDisabled={groupName.length === 0}
           />
         </ModalFooter>
       </ModalContent>

@@ -17,23 +17,25 @@ import { GroupComponent } from './Group';
 import { CheckInvites } from '../InviteModal/CheckInvites';
 import { useEffect, useState } from 'react';
 import { Group } from '@/interfaces';
+import { useDrawerDisclosure } from '@/context';
 
-interface GroupsBarProps {
-  isOpenDrawer: boolean;
-  onCloseDrawer: () => void;
-}
-
-export function GroupsBar({ isOpenDrawer, onCloseDrawer }: GroupsBarProps) {
+export function GroupsBar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const inviteModal = useDisclosure();
   const checkInviteModal = useDisclosure();
   const { groups, setSelectedGroup } = useGroups();
   const { invites } = useInvites();
   const [localGroups, setLocalGroups] = useState<Group[]>(groups);
+  const { isOpenDrawer, onCloseDrawer } = useDrawerDisclosure();
 
   useEffect(() => {
     setLocalGroups(groups);
   }, [groups]);
+
+  const onSelectGroup = (group: Group) => {
+    setSelectedGroup(group);
+    onCloseDrawer();
+  };
 
   return (
     <Drawer
@@ -133,7 +135,7 @@ export function GroupsBar({ isOpenDrawer, onCloseDrawer }: GroupsBarProps) {
                 <GroupComponent
                   group={group}
                   key={group.groupId}
-                  onClick={setSelectedGroup}
+                  onClick={() => onSelectGroup(group)}
                 />
               );
             })

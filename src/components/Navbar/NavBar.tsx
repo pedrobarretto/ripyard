@@ -11,18 +11,22 @@ import {
   signOut,
 } from 'firebase/auth';
 import { useGroups, useInvites, useMessages, useUser } from '@/store';
-import { Group, Invite, Message, User } from '@/interfaces';
+import { Group, Message, User } from '@/interfaces';
 import { getDoc, doc } from 'firebase/firestore';
+import { usePathname, useRouter } from 'next/navigation';
+import { useDrawerDisclosure } from '@/context';
 
 export function NavBar() {
   const { rawUser, setRawUser, setUser } = useUser();
   const { setGroups, groups } = useGroups();
   const { mountMessage, setRawMessages } = useMessages();
   const { setInvites } = useInvites();
+  const { onOpenDrawer } = useDrawerDisclosure();
+  const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      console.log('Auth has changed');
       if (user) {
         setRawUser(user);
 
@@ -63,10 +67,8 @@ export function NavBar() {
           await getDoc(doc(db, 'invites', userData.id))
         ).data();
         setInvites(invitesData ? invitesData.invites : []);
-
-        console.log(`Setting user ${user.email}`);
       } else {
-        console.log('Not logged in');
+        router.push('/');
       }
     });
 
@@ -97,6 +99,22 @@ export function NavBar() {
       </div>
       {rawUser.email ? (
         <div className={styles.buttonContainer}>
+          {pathname === '/graveyard' && (
+            <Button
+              colorScheme='custom'
+              _hover={{
+                backgroundColor: 'dark.grpBrnHover',
+                boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)',
+              }}
+              backgroundColor='dark.grpBtn'
+              color='text.antiWhite'
+              marginRight={3}
+              onClick={onOpenDrawer}
+            >
+              Grupos
+            </Button>
+          )}
+
           <Link href='/' passHref>
             <Button
               colorScheme='custom'

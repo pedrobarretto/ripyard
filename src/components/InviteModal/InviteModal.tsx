@@ -11,7 +11,7 @@ import {
   Stack,
   Textarea,
 } from '@chakra-ui/react';
-import { CustomButton, CustomInput } from '..';
+import { CustomButton, CustomInput, LoadingButton } from '..';
 import { useState } from 'react';
 import { useGroups, useInvites, useUser } from '@/store';
 import { auth, db } from '@/config/firebase';
@@ -37,8 +37,7 @@ export function InviteModal({ isOpen, onClose }: InviteModalProps) {
   const [groupId, setGroupId] = useState('');
   const [inviteMessage, setInviteMessage] = useState('');
   const { groups } = useGroups();
-  const { user } = useUser();
-  const { invites, setInvites } = useInvites();
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
   const getUserByEmail = async (email: string) => {
@@ -62,6 +61,7 @@ export function InviteModal({ isOpen, onClose }: InviteModalProps) {
   };
 
   const handleInvite = async () => {
+    setIsLoading(true);
     const signInMethods = await fetchSignInMethodsForEmail(auth, email);
     if (signInMethods.length <= 0) {
       setError('Email não existe!');
@@ -89,9 +89,6 @@ export function InviteModal({ isOpen, onClose }: InviteModalProps) {
       const updatedInvites: Invite[] =
         invitesLst.length > 0 ? [...invitesLst, newInvite] : [newInvite];
 
-      console.log('invitesLst: ', invitesLst);
-      console.log('updatedInvites: ', updatedInvites);
-
       const oldInvites = (
         await getDoc(doc(db, 'invites', invitedUserId.id))
       ).data() as Invite[];
@@ -107,8 +104,10 @@ export function InviteModal({ isOpen, onClose }: InviteModalProps) {
       }
 
       setError('');
+      setIsLoading(false);
       onClose();
     } else {
+      setIsLoading(false);
       setError('Erro ao enviar convite, tente novamente mais tarde.');
     }
   };
@@ -152,8 +151,9 @@ export function InviteModal({ isOpen, onClose }: InviteModalProps) {
           </Stack>
         </ModalBody>
         <ModalFooter>
-          <CustomButton
-            disabled={email.length === 0 || groupId.length === 0}
+          <LoadingButton
+            isLoading={isLoading}
+            isDisabled={email.length === 0 || groupId.length === 0}
             text='Convidar participante'
             onClick={handleInvite}
           />

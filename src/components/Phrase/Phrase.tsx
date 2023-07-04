@@ -1,6 +1,5 @@
 'use client';
 import { Message } from '@/interfaces';
-import { formatBrazilDate } from '@/utils';
 import Image from 'next/image';
 
 interface PhraseProps {
@@ -10,99 +9,6 @@ interface PhraseProps {
 }
 
 export function Phrase({ message, img, isFromUser }: PhraseProps) {
-  const handleComponentOrder = () => {
-    // if (isFromUser) {
-    //   return (
-    //     <>
-    //       <Image
-    //         src={img}
-    //         alt={'Imagem do autor da frase'}
-    //         width={40}
-    //         height={40}
-    //       />
-    //       <div
-    //         className='phrase-text'
-    //         style={{
-    //           background: '#BEBEBE',
-    //           borderRadius: '10px',
-    //           display: 'flex',
-    //           alignItems: 'center',
-    //           justifyContent: 'center',
-    //           flexDirection: 'column',
-    //           padding: 10,
-    //         }}
-    //       >
-    //         <div>
-    //           <span>{message.author}</span>
-    //         </div>
-    //         <span>{message.message}</span>
-    //       </div>
-    //     </>
-    //   );
-    // }
-
-    // return (
-    //   <>
-    //     <div
-    //       style={{
-    //         background: '#BEBEBE',
-    //         borderRadius: '10px',
-    //         display: 'flex',
-    //         alignItems: 'center',
-    //         justifyContent: 'center',
-    //         flexDirection: 'column',
-    //         padding: 10,
-    //         flexGrow: 1,
-    //         overflowWrap: 'break-word',
-    //         wordWrap: 'break-word',
-    //         hyphens: 'auto',
-    //       }}
-    //     >
-    //       <div>
-    //         <span>{message.author}</span>
-    //       </div>
-    //       <span>{message.message}</span>
-    //     </div>
-    //     <Image
-    //       src={img}
-    //       alt={'Imagem do autor da frase'}
-    //       width={40}
-    //       height={40}
-    //     />
-    //   </>
-    // );
-    return (
-      <>
-        <Image
-          src={img}
-          alt={'Imagem do autor da frase'}
-          width={40}
-          height={40}
-        />
-        <div>
-          <span>{message.author}</span>
-          {/* <span style={{ color: 'gray.text' }}>
-            {formatBrazilDate(message.createdAt)}
-          </span> */}
-          <div
-            className='phrase-text'
-            style={{
-              background: '#BEBEBE',
-              borderRadius: '10px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexDirection: 'column',
-              padding: 10,
-            }}
-          >
-            <span>{message.message}</span>
-          </div>
-        </div>
-      </>
-    );
-  };
-
   return (
     <div
       style={{
@@ -115,9 +21,43 @@ export function Phrase({ message, img, isFromUser }: PhraseProps) {
         flexDirection: 'row',
         alignItems: 'center',
         gap: 10,
+        flexWrap: 'wrap', // Allow wrapping of content
       }}
     >
-      {handleComponentOrder()}
+      <Image
+        src={img}
+        alt={'Imagem do autor da frase'}
+        width={40}
+        height={40}
+      />
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          minWidth: 0, // Allow text to overflow
+        }}
+      >
+        <span>{message.author}</span>
+        <div
+          className='phrase-text'
+          style={{
+            background: '#BEBEBE',
+            borderRadius: '10px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'column',
+            padding: 10,
+            overflowWrap: 'break-word', // Break long words
+            wordWrap: 'break-word',
+            wordBreak: 'break-word',
+            hyphens: 'auto',
+            maxWidth: '100%', // Limit the width of the message container
+          }}
+        >
+          <span>{message.message}</span>
+        </div>
+      </div>
     </div>
   );
 }

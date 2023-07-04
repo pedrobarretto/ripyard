@@ -6,6 +6,7 @@ import {
   Input,
   InputGroup,
   InputRightElement,
+  Spinner,
   Stack,
   Text,
 } from '@chakra-ui/react';
@@ -21,7 +22,6 @@ import {
 import { db } from '@/config/firebase';
 import { Message, MessagesContext } from '@/interfaces';
 import { Phrase } from '..';
-import { formatBrazilDate } from '@/utils';
 
 export function MessagesContainer() {
   const [msg, setMsg] = useState('');
@@ -29,6 +29,7 @@ export function MessagesContainer() {
   const { user } = useUser();
   const { messages, setMessages, rawMessages, setRawMessages } = useMessages();
   const [filteredMessages, setFilteredMessages] = useState<Message[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (selectedGroup) {
@@ -62,31 +63,39 @@ export function MessagesContainer() {
   };
 
   const handleSendMessage = async () => {
-    const colRef = collection(db, 'messages');
-    const data: Message = {
-      message: msg,
-      author: user.username,
-      authorEmail: user.email,
-      groupId: selectedGroup.groupId,
-      createdAt: Timestamp.fromDate(new Date()),
-      messageId: '',
-      reactions: [],
-    };
-    const msgData = await addDoc(colRef, data);
-    await updateDoc(doc(db, 'messages', msgData.id), { messageId: msgData.id });
-    await updateDoc(doc(db, 'groups', selectedGroup.groupId), {
-      messages: [...selectedGroup.messages, msgData.id],
-    });
-    setMessages(mountMessage());
-    setRawMessages([...rawMessages, data]);
-    setMsg('');
+    setIsLoading(true);
+    try {
+      const colRef = collection(db, 'messages');
+      const data: Message = {
+        message: msg,
+        author: user.username,
+        authorEmail: user.email,
+        groupId: selectedGroup.groupId,
+        createdAt: Timestamp.fromDate(new Date()),
+        messageId: '',
+        reactions: [],
+      };
+      const msgData = await addDoc(colRef, data);
+      await updateDoc(doc(db, 'messages', msgData.id), {
+        messageId: msgData.id,
+      });
+      await updateDoc(doc(db, 'groups', selectedGroup.groupId), {
+        messages: [...selectedGroup.messages, msgData.id],
+      });
+      setMessages(mountMessage());
+      setRawMessages([...rawMessages, data]);
+      setMsg('');
+    } catch (error) {
+      console.log(error);
+    }
+    setIsLoading(false);
   };
 
   return (
     <div
       style={{
-        width: '100vw',
-        height: '80vh',
+        width: '100%',
+        height: '90vh',
         flexShrink: '0',
         borderRadius: '10px',
         background: '#D9D9D9',
@@ -95,6 +104,7 @@ export function MessagesContainer() {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
+        margin: 0,
       }}
     >
       <Stack
@@ -130,10 +140,22 @@ export function MessagesContainer() {
           placeholder='Escreva sua frase aqui!'
           value={msg}
           onChange={(event) => setMsg(event.target.value)}
+          isDisabled={selectedGroup?.groupId === undefined}
         />
         <InputRightElement width='4.5rem'>
-          <Button h='1.75rem' size='sm' onClick={handleSendMessage}>
-            <ArrowRightIcon color='gray.button' />
+          <Button
+            isDisabled={
+              selectedGroup?.groupId === undefined || msg.length === 0
+            }
+            h='1.75rem'
+            size='sm'
+            onClick={handleSendMessage}
+          >
+            {isLoading ? (
+              <Spinner size={'md'} />
+            ) : (
+              <ArrowRightIcon color='gray.button' />
+            )}
           </Button>
         </InputRightElement>
       </InputGroup>

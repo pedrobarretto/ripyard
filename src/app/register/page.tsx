@@ -1,24 +1,36 @@
 'use client';
-import { CustomButton } from '@/components';
-import { Container, Input, Link } from '@chakra-ui/react';
+import { LoadingButton } from '@/components';
+import {
+  Button,
+  Container,
+  Input,
+  InputGroup,
+  InputRightElement,
+  Link,
+} from '@chakra-ui/react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { useState } from 'react';
 import { auth, db } from '../../config/firebase';
 import { useRouter } from 'next/navigation';
-import { doc, setDoc } from 'firebase/firestore';
+import { Timestamp, doc, setDoc } from 'firebase/firestore';
 import { useUser } from '@/store';
 
 export default function Page() {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [show, setShow] = useState(false);
   const { setUser, setRawUser } = useUser();
   const router = useRouter();
 
+  const handleClick = () => setShow(!show);
+
   const handleRegister = async () => {
+    setIsLoading(true);
     try {
       const info = await createUserWithEmailAndPassword(auth, email, password);
-      const createdAt = new Date();
+      const createdAt = Timestamp.fromDate(new Date());
       await setDoc(doc(db, 'users', info.user.uid), {
         email,
         username,
@@ -32,6 +44,7 @@ export default function Page() {
     } catch (error) {
       console.log(error);
     }
+    setIsLoading(false);
   };
 
   return (
@@ -69,14 +82,33 @@ export default function Page() {
           value={username}
           onChange={(event) => setUsername(event.target.value)}
         />
-        <Input
-          variant='filled'
-          placeholder='Senha'
-          width='sm'
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
+        <InputGroup width='sm'>
+          <Input
+            variant='filled'
+            placeholder='Senha'
+            width='sm'
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            type={show ? 'text' : 'password'}
+          />
+          <InputRightElement width='5rem'>
+            <Button
+              h='1.75rem'
+              size='sm'
+              marginRight={1}
+              onClick={handleClick}
+              style={{ backgroundColor: '#969696' }}
+            >
+              {show ? 'Esconder' : 'Mostrar'}
+            </Button>
+          </InputRightElement>
+        </InputGroup>
+        <LoadingButton
+          isLoading={isLoading}
+          text='Criar'
+          onClick={handleRegister}
+          width={'sm'}
         />
-        <CustomButton text='Criar' onClick={handleRegister} width={'sm'} />
         <div style={{ textAlign: 'center' }}>
           <p>Já tem uma conta?</p>
           <Link href='/login'>Faça o login aqui!</Link>

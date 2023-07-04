@@ -1,12 +1,12 @@
 'use client';
-import { CustomButton } from '@/components';
+import { LoadingButton } from '@/components';
 import {
   Button,
   Container,
   Input,
   InputGroup,
   InputRightElement,
-  Link,
+  Text,
 } from '@chakra-ui/react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useState } from 'react';
@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation';
 import { useUser } from '@/store';
 import { doc, getDoc } from 'firebase/firestore';
 import { User } from '@/interfaces';
+import Link from 'next/link';
 
 export default function Page() {
   const [email, setEmail] = useState('');
@@ -22,10 +23,12 @@ export default function Page() {
   const [show, setShow] = useState(false);
   const { setUser, setRawUser } = useUser();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleClick = () => setShow(!show);
 
   const handleLogin = async () => {
+    setIsLoading(true);
     try {
       const info = await signInWithEmailAndPassword(auth, email, password);
       const user = await getDoc(doc(db, 'users', info.user.uid));
@@ -39,6 +42,7 @@ export default function Page() {
     } catch (error) {
       console.log(error);
     }
+    setIsLoading(false);
   };
 
   return (
@@ -78,21 +82,29 @@ export default function Page() {
             onChange={(event) => setPassword(event.target.value)}
             type={show ? 'text' : 'password'}
           />
-          <InputRightElement width='4.5rem'>
+          <InputRightElement width='5rem'>
             <Button
               h='1.75rem'
               size='sm'
+              marginRight={1}
               onClick={handleClick}
               style={{ backgroundColor: '#969696' }}
             >
-              {show ? 'Hide' : 'Show'}
+              {show ? 'Esconder' : 'Mostrar'}
             </Button>
           </InputRightElement>
         </InputGroup>
-        <CustomButton text='Entrar' onClick={handleLogin} width={'sm'} />
+        <LoadingButton
+          text='Entrar'
+          onClick={handleLogin}
+          width={'sm'}
+          isLoading={isLoading}
+        />
         <div style={{ textAlign: 'center' }}>
           <p>Ainda não criou sua conta?</p>
-          <Link href='/register'>Registrar</Link>
+          <Link href='/register' passHref>
+            <Text _hover={{ textDecoration: 'underline' }}>Registrar</Text>
+          </Link>
         </div>
       </Container>
     </div>

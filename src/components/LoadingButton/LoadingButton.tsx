@@ -1,12 +1,22 @@
 'use client';
-import { Button, ButtonProps as ChakraButtonProps } from '@chakra-ui/react';
+import {
+  Button,
+  ButtonProps as ChakraButtonProps,
+  Spinner,
+} from '@chakra-ui/react';
 
 interface ButtonProps extends ChakraButtonProps {
   text: string;
-  onClick: () => void;
+  onClick: () => Promise<void>;
+  isLoading: boolean;
 }
 
-export function CustomButton({ text, onClick, ...rest }: ButtonProps) {
+export function LoadingButton({
+  text,
+  onClick,
+  isLoading,
+  ...rest
+}: ButtonProps) {
   return (
     <Button
       colorScheme='custom'
@@ -18,9 +28,9 @@ export function CustomButton({ text, onClick, ...rest }: ButtonProps) {
       color='text.white'
       onClick={onClick}
       {...rest}
-      isDisabled={rest.disabled || false}
+      isDisabled={isLoading || rest.isDisabled}
     >
-      {text}
+      {isLoading ? <Spinner size={'md'} /> : <>{text}</>}
     </Button>
   );
 }

@@ -1,4 +1,5 @@
 'use client';
+import { DisclosureProvider } from '@/context';
 import { CacheProvider } from '@chakra-ui/next-js';
 import { ChakraProvider, withDefaultColorScheme } from '@chakra-ui/react';
 import { extendTheme } from '@chakra-ui/react';
@@ -13,6 +14,7 @@ const colors = {
   },
   text: {
     white: '#fff',
+    antiWhite: '#EBEBEB',
   },
   green: {
     accept: '#66ed8a',
@@ -21,6 +23,10 @@ const colors = {
   red: {
     reject: '#de5757',
     hover: '#ed6f6f',
+  },
+  dark: {
+    grpBtn: '#454851',
+    grpBrnHover: '#212529',
   },
 };
 
@@ -45,7 +51,9 @@ const theme = extendTheme(
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <CacheProvider>
-      <ChakraProvider theme={theme}>{children}</ChakraProvider>
+      <ChakraProvider theme={theme}>
+        <DisclosureProvider>{children}</DisclosureProvider>
+      </ChakraProvider>
     </CacheProvider>
   );
 }
