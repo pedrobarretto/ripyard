@@ -1,7 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
 import {
-  Box,
   Button,
   Input,
   InputGroup,
@@ -11,79 +10,54 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { ArrowRightIcon } from '@chakra-ui/icons';
-import { useGroups, useMessages, useUser } from '@/store';
-import {
-  Timestamp,
-  addDoc,
-  collection,
-  doc,
-  updateDoc,
-} from 'firebase/firestore';
-import { db } from '@/config/firebase';
-import { Message, MessagesContext } from '@/interfaces';
+import { useGroups, useUser } from '@/store';
+import { Timestamp } from 'firebase/firestore';
+import { db, rtdb } from '@/config/firebase';
+import { Message } from '@/interfaces';
 import { Phrase } from '..';
+import { onValue, push, ref, set } from 'firebase/database';
+import { v4 as uuid } from 'uuid';
 
 export function MessagesContainer() {
   const [msg, setMsg] = useState('');
   const { selectedGroup } = useGroups();
   const { user } = useUser();
-  const { messages, setMessages, rawMessages, setRawMessages } = useMessages();
   const [filteredMessages, setFilteredMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (selectedGroup) {
-      const filteredMsgs = rawMessages.filter(
-        (msg) => msg.groupId === selectedGroup.groupId
-      );
-      if (filteredMsgs) {
-        setFilteredMessages(filteredMsgs);
-      } else {
-        setFilteredMessages([]);
-      }
+      const msgsRef = ref(rtdb, `${selectedGroup.groupId}/`);
+      onValue(msgsRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          console.log('data: ', data);
+          setFilteredMessages(Object.values(data)); // Update filteredMessages with an array of messages
+        } else {
+          setFilteredMessages([]);
+        }
+      });
     } else {
       setFilteredMessages([]);
     }
-  }, [selectedGroup, messages]);
-
-  const mountMessage = (): MessagesContext[] => {
-    const filteredMsgs = messages.filter(
-      (x) => x.groupId === selectedGroup.groupId
-    );
-    const updatedContext = {
-      groupId: selectedGroup.groupId,
-      messages: [] as Message[],
-    };
-
-    filteredMsgs.forEach((msg) => {
-      updatedContext.messages.push(...msg.messages);
-    });
-
-    return [updatedContext];
-  };
+  }, [selectedGroup]);
 
   const handleSendMessage = async () => {
     setIsLoading(true);
     try {
-      const colRef = collection(db, 'messages');
-      const data: Message = {
+      const messageId = uuid();
+      const messageRef = ref(rtdb, `${selectedGroup.groupId}/`);
+      const newMessageRef = push(messageRef); // Generate a new unique key for the message
+      const newMessage: Message = {
         message: msg,
         author: user.username,
         authorEmail: user.email,
         groupId: selectedGroup.groupId,
         createdAt: Timestamp.fromDate(new Date()),
-        messageId: '',
+        messageId,
         reactions: [],
       };
-      const msgData = await addDoc(colRef, data);
-      await updateDoc(doc(db, 'messages', msgData.id), {
-        messageId: msgData.id,
-      });
-      await updateDoc(doc(db, 'groups', selectedGroup.groupId), {
-        messages: [...selectedGroup.messages, msgData.id],
-      });
-      setMessages(mountMessage());
-      setRawMessages([...rawMessages, data]);
+      await set(newMessageRef, newMessage); // Set the new message under the unique key
       setMsg('');
     } catch (error) {
       console.log(error);
@@ -108,27 +82,23 @@ export function MessagesContainer() {
       }}
     >
       <Stack
-        direction={'column'}
+        direction='column'
         height='846px'
         overflowY='scroll'
         borderRadius='md'
         p={4}
       >
-        {selectedGroup ? (
-          filteredMessages.length === 0 ? (
-            <Text>Não há frases neste grupo.</Text>
-          ) : (
-            filteredMessages.map((message) => (
-              <Phrase
-                img={'/ripyard-logo.png'}
-                isFromUser={message.author === user.username}
-                message={message}
-                key={`${message.messageId}-${message.author}`}
-              />
-            ))
-          )
+        {filteredMessages.length === 0 ? (
+          <Text>Não há frases neste grupo.</Text>
         ) : (
-          <Text>Selecione um grupo para ver as mensagens.</Text>
+          filteredMessages.map((message) => (
+            <Phrase
+              img={'/ripyard-logo.png'}
+              isFromUser={message.author === user.username}
+              message={message}
+              key={message.messageId} // Make sure each message has a unique key
+            />
+          ))
         )}
       </Stack>
       <InputGroup size='md'>
