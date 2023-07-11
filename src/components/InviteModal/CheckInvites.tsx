@@ -13,6 +13,7 @@ import {
   Button,
   Spinner,
   Text,
+  useToast,
 } from '@chakra-ui/react';
 import { useGroups, useInvites, useUser } from '@/store';
 import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
@@ -36,6 +37,7 @@ export function CheckInvites({
   const { invites } = useInvites();
   const { user, setUser } = useUser();
   const { setGroups, groups } = useGroups();
+  const toast = useToast();
   const [isLoadingAccept, setIsLoadingAccept] = useState(false);
   const [isLoadingReject, setIsLoadingReject] = useState(false);
 
@@ -68,19 +70,43 @@ export function CheckInvites({
       setGroups(grpLst);
       setLocalGroups(grpLst);
       setIsLoadingAccept(false);
+      toast({
+        title: 'Convite aceito',
+        description: `Você aceitou o convite para o grupo ${invite.groupName}.`,
+        status: 'success',
+        duration: 9000,
+        isClosable: true,
+      });
     } catch (error) {
-      console.log(error);
+      setIsLoadingAccept(false);
+      toast({
+        title: 'Erro :(',
+        description: `Erro ao aceitar o convite para o grupo ${invite.groupName}.`,
+        status: 'error',
+        duration: 9000,
+        isClosable: true,
+      });
     }
-    setIsLoadingAccept(false);
   };
 
   const handleDecline = async (invite: Invite) => {
     setIsLoadingReject(true);
     try {
       await removeInviteFromRTD(invite);
+      toast({
+        description: `Você rejeitou o convite para o grupo ${invite.groupName}.`,
+        status: 'success',
+        duration: 9000,
+        isClosable: true,
+      });
       setIsLoadingReject(false);
     } catch (error) {
-      console.log(error);
+      toast({
+        description: `Erro ao rejeitar o convite para o grupo ${invite.groupName}.`,
+        status: 'error',
+        duration: 9000,
+        isClosable: true,
+      });
     }
     setIsLoadingReject(false);
   };

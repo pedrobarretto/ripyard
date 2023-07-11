@@ -7,6 +7,7 @@ import {
   ModalCloseButton,
   ModalBody,
   ModalFooter,
+  useToast,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { CustomButton, CustomInput, LoadingButton } from '..';
@@ -32,6 +33,7 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { rawUser, user } = useUser();
   const { groups, setGroups } = useGroups();
+  const toast = useToast();
 
   const createGroup = async () => {
     setIsLoading(true);
@@ -69,9 +71,21 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
       });
       setGroups([...groups, groupData]);
       setGroupName('');
+      toast({
+        description: `Grupo ${groupData.name} criado com sucesso!`,
+        status: 'success',
+        duration: 9000,
+        isClosable: true,
+      });
       onClose();
     } catch (error) {
-      console.log(error);
+      toast({
+        description:
+          'Desculpe, ocorreu um erro ao criar seu grupo, tente novamente mais tarde.',
+        status: 'error',
+        duration: 9000,
+        isClosable: true,
+      });
     }
     setIsLoading(false);
   };

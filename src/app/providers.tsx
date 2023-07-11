@@ -1,7 +1,11 @@
 'use client';
 import { DisclosureProvider } from '@/context';
 import { CacheProvider } from '@chakra-ui/next-js';
-import { ChakraProvider, withDefaultColorScheme } from '@chakra-ui/react';
+import {
+  ChakraProvider,
+  useToast,
+  withDefaultColorScheme,
+} from '@chakra-ui/react';
 import { extendTheme } from '@chakra-ui/react';
 
 const colors = {
@@ -49,9 +53,14 @@ const theme = extendTheme(
 );
 
 export function Providers({ children }: { children: React.ReactNode }) {
+  const toast = useToast();
+
   return (
     <CacheProvider>
-      <ChakraProvider theme={theme}>
+      <ChakraProvider
+        theme={theme}
+        toastOptions={{ defaultOptions: { position: 'top-right' } }}
+      >
         <DisclosureProvider>{children}</DisclosureProvider>
       </ChakraProvider>
     </CacheProvider>

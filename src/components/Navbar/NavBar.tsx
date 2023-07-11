@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './Navbar.module.css';
-import { Button } from '@chakra-ui/react';
+import { Button, useToast } from '@chakra-ui/react';
 import { auth, db } from '@/config/firebase';
 import {
   User as FirebaseUser,
@@ -24,6 +24,7 @@ export function NavBar() {
   const { onOpenDrawer } = useDrawerDisclosure();
   const router = useRouter();
   const pathname = usePathname();
+  const toast = useToast();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {

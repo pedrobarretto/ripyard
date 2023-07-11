@@ -7,6 +7,7 @@ import {
   InputGroup,
   InputRightElement,
   Link,
+  useToast,
 } from '@chakra-ui/react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { useState } from 'react';
@@ -14,6 +15,8 @@ import { auth, db } from '../../config/firebase';
 import { useRouter } from 'next/navigation';
 import { Timestamp, doc, setDoc } from 'firebase/firestore';
 import { useUser } from '@/store';
+import { FirebaseError } from 'firebase/app';
+import { mapErrorCodeToMessage } from '@/utils';
 
 export default function Page() {
   const [email, setEmail] = useState('');
@@ -23,6 +26,7 @@ export default function Page() {
   const [show, setShow] = useState(false);
   const { setUser, setRawUser } = useUser();
   const router = useRouter();
+  const toast = useToast();
 
   const handleClick = () => setShow(!show);
 
@@ -42,7 +46,22 @@ export default function Page() {
       setRawUser(info.user);
       router.push('/');
     } catch (error) {
-      console.log(error);
+      if (error instanceof FirebaseError) {
+        toast({
+          description: mapErrorCodeToMessage(error.code),
+          status: 'error',
+          duration: 9000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          description:
+            'Desculpe, ocorreu um erro inesperado ao criar sua conta',
+          status: 'error',
+          duration: 9000,
+          isClosable: true,
+        });
+      }
     }
     setIsLoading(false);
   };
