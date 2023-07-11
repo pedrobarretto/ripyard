@@ -147,7 +147,7 @@ export function InviteModal({ isOpen, onClose }: InviteModalProps) {
             />
             <Select
               variant='filled'
-              width={'sm'}
+              width={['20rem', 'sm']}
               placeholder='Escolha um grupo'
               onChange={(event) => setGroupId(event.target.value)}
             >
@@ -163,7 +163,7 @@ export function InviteModal({ isOpen, onClose }: InviteModalProps) {
               placeholder='Deixe uma mensagem em seu convite!'
               value={inviteMessage}
               onChange={(event) => setInviteMessage(event.target.value)}
-              width={'sm'}
+              width={['20rem', 'sm']}
               variant='filled'
               lineHeight={3}
             />

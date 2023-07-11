@@ -21,7 +21,6 @@ export function Phrase({ message, img, isFromUser }: PhraseProps) {
         flexDirection: 'row',
         alignItems: 'center',
         gap: 10,
-        flexWrap: 'wrap', // Allow wrapping of content
       }}
     >
       <Image
@@ -34,7 +33,7 @@ export function Phrase({ message, img, isFromUser }: PhraseProps) {
         style={{
           display: 'flex',
           flexDirection: 'column',
-          minWidth: 0, // Allow text to overflow
+          minWidth: 0,
         }}
       >
         <span>{message.author}</span>

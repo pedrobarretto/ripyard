@@ -19,7 +19,7 @@ export function CustomInput({
       backgroundColor='gray.input'
       variant='filled'
       placeholder={placeholder}
-      width={width ? width : 'sm'}
+      width={width ? width : ['20rem', 'sm']}
       value={value}
       onChange={(event) => setValue(event.target.value)}
     />

@@ -44,7 +44,6 @@ export function MessagesContainer() {
   const handleSendMessage = async () => {
     setIsLoading(true);
     try {
-      const messageId = uuid();
       const messageRef = ref(rtdb, `${selectedGroup.groupId}/`);
       const newMessageRef = push(messageRef);
       const newMessage: Message = {
@@ -53,7 +52,7 @@ export function MessagesContainer() {
         authorEmail: user.email,
         groupId: selectedGroup.groupId,
         createdAt: Timestamp.fromDate(new Date()),
-        messageId,
+        messageId: newMessageRef.key || 'none',
         reactions: [],
       };
       await set(newMessageRef, newMessage);
