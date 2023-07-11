@@ -12,21 +12,37 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { CreateGroupModal, InviteModal, NoneData } from '..';
-import { useGroups, useInvites } from '@/store';
+import { useGroups, useInvites, useUser } from '@/store';
 import { GroupComponent } from './Group';
 import { CheckInvites } from '../InviteModal/CheckInvites';
 import { useEffect, useState } from 'react';
-import { Group } from '@/interfaces';
+import { Group, Invite } from '@/interfaces';
 import { useDrawerDisclosure } from '@/context';
+import { rtdb } from '@/config/firebase';
+import { ref, onValue } from 'firebase/database';
 
 export function GroupsBar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const inviteModal = useDisclosure();
   const checkInviteModal = useDisclosure();
   const { groups, setSelectedGroup } = useGroups();
-  const { invites } = useInvites();
+  const { invites, setInvites } = useInvites();
   const [localGroups, setLocalGroups] = useState<Group[]>(groups);
   const { isOpenDrawer, onCloseDrawer } = useDrawerDisclosure();
+  const { user } = useUser();
+
+  useEffect(() => {
+    const inviteRef = ref(rtdb, `${user.id}/invites`);
+    onValue(inviteRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const invites: Invite[] = Object.values(snapshot.val());
+        setInvites(invites);
+      } else {
+        setInvites([]);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpenDrawer]);
 
   useEffect(() => {
     setLocalGroups(groups);
@@ -38,21 +54,7 @@ export function GroupsBar() {
   };
 
   return (
-    <Drawer
-      placement='left'
-      isOpen={isOpenDrawer}
-      onClose={onCloseDrawer}
-      // style={{
-      //   width: '400px',
-      //   height: '846px',
-      //   flexShrink: '0',
-      //   borderRadius: '10px',
-      //   background: '#D9D9D9',
-      //   boxShadow: '0px 4px 4px 0px rgba(0, 0, 0, 0.25)',
-      //   display: 'flex',
-      //   flexDirection: 'column',
-      // }}
-    >
+    <Drawer placement='left' isOpen={isOpenDrawer} onClose={onCloseDrawer}>
       <DrawerOverlay />
       <DrawerContent>
         <DrawerHeader borderBottomWidth='1px'>Grupos</DrawerHeader>

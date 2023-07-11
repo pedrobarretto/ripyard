@@ -12,13 +12,15 @@ import {
   Stack,
   Button,
   Spinner,
+  Text,
 } from '@chakra-ui/react';
 import { useGroups, useInvites, useUser } from '@/store';
 import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
-import { deleteDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '@/config/firebase';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { db, rtdb } from '@/config/firebase';
 import { Group, Invite } from '@/interfaces';
 import { useState } from 'react';
+import { ref, remove } from 'firebase/database';
 
 interface CheckInvitesModalProps {
   isOpen: boolean;
@@ -31,25 +33,23 @@ export function CheckInvites({
   isOpen,
   setLocalGroups,
 }: CheckInvitesModalProps) {
-  const { invites, setInvites } = useInvites();
+  const { invites } = useInvites();
   const { user, setUser } = useUser();
-  const { setGroups } = useGroups();
+  const { setGroups, groups } = useGroups();
   const [isLoadingAccept, setIsLoadingAccept] = useState(false);
   const [isLoadingReject, setIsLoadingReject] = useState(false);
+
+  const removeInviteFromRTD = async (invite: Invite) => {
+    const inviteRef = ref(
+      rtdb,
+      `${invite.invitedUserId}/invites/${invite.inviteId}`
+    );
+    await remove(inviteRef);
+  };
 
   const handleAccept = async (invite: Invite) => {
     setIsLoadingAccept(true);
     try {
-      const newInvites = invites.filter((x) => x.groupId !== invite.groupId);
-
-      if (newInvites.length === 0) {
-        await deleteDoc(doc(db, 'invites', user.id));
-      } else {
-        await updateDoc(doc(db, 'invites', user.id), { invites: newInvites });
-      }
-
-      setInvites(newInvites);
-
       const newUserGroups = [
         ...user.groups,
         { groupId: invite.groupId, groupName: invite.groupName },
@@ -58,40 +58,27 @@ export function CheckInvites({
       await updateDoc(doc(db, 'users', user.id), { groups: newUserGroups });
       setUser({ ...user, groups: newUserGroups });
 
-      const grpPromises = user.groups.map((group) => {
-        return getDoc(doc(db, 'groups', group.groupId));
-      });
-      const grpData = await Promise.all(grpPromises);
-      const grpLst = grpData.map(
-        (groupData) => JSON.parse(JSON.stringify(groupData.data())) as Group
-      );
+      const newGroup = await getDoc(doc(db, 'groups', invite.groupId));
+      const grpLst = newGroup.exists()
+        ? [...groups, newGroup.data() as Group]
+        : [...groups];
+
+      await removeInviteFromRTD(invite);
+
       setGroups(grpLst);
       setLocalGroups(grpLst);
       setIsLoadingAccept(false);
-
-      if (newInvites.length === 0) onClose();
     } catch (error) {
       console.log(error);
     }
     setIsLoadingAccept(false);
   };
 
-  const handleDecline = async (groupId: string) => {
+  const handleDecline = async (invite: Invite) => {
     setIsLoadingReject(true);
     try {
-      const newInvites = invites.filter((invite) => invite.groupId !== groupId);
-
-      if (newInvites.length === 0) {
-        await deleteDoc(doc(db, 'invites', user.id));
-        onClose();
-      } else {
-        await updateDoc(doc(db, 'invites', user.id), { invites: newInvites });
-      }
-
-      setInvites(newInvites);
+      await removeInviteFromRTD(invite);
       setIsLoadingReject(false);
-
-      if (newInvites.length === 0) onClose();
     } catch (error) {
       console.log(error);
     }
@@ -105,6 +92,9 @@ export function CheckInvites({
         <ModalHeader>Convites Pendentes</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
+          {invites.length === 0 && (
+            <Text>Você não tem nenhum convite pendente.</Text>
+          )}
           {invites.map((invite) => {
             return (
               <Card
@@ -159,7 +149,7 @@ export function CheckInvites({
                         width: '40px',
                         borderRadius: 50,
                       }}
-                      onClick={() => handleDecline(invite.groupId)}
+                      onClick={() => handleDecline(invite)}
                       isDisabled={isLoadingReject}
                     >
                       {isLoadingReject ? (

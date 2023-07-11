@@ -11,21 +11,14 @@ import {
   Stack,
   Textarea,
 } from '@chakra-ui/react';
-import { CustomButton, CustomInput, LoadingButton } from '..';
+import { CustomInput, LoadingButton } from '..';
 import { useState } from 'react';
-import { useGroups, useInvites, useUser } from '@/store';
-import { auth, db } from '@/config/firebase';
+import { useGroups } from '@/store';
+import { auth, db, rtdb } from '@/config/firebase';
 import { fetchSignInMethodsForEmail } from 'firebase/auth';
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  setDoc,
-  where,
-} from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { Invite, User } from '@/interfaces';
+import { child, get, push, ref, set } from 'firebase/database';
 
 interface InviteModalProps {
   isOpen: boolean;
@@ -39,6 +32,13 @@ export function InviteModal({ isOpen, onClose }: InviteModalProps) {
   const { groups } = useGroups();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const closeModal = () => {
+    setEmail('');
+    setError('');
+    setIsLoading(false);
+    onClose();
+  };
 
   const getUserByEmail = async (email: string) => {
     const usersRef = collection(db, 'users');
@@ -68,44 +68,64 @@ export function InviteModal({ isOpen, onClose }: InviteModalProps) {
       return;
     }
 
-    const [group] = groups.filter((grp) => grp.groupId === groupId);
+    const invitedUser = await getUserByEmail(email);
 
-    const newInvite: Invite = {
-      groupId: group.groupId,
-      groupName: group.name,
-      groupOwner: group.ownerName,
-      groupOwnerEmail: group.ownerEmail,
-      inviteMessage,
-    };
+    if (invitedUser !== null) {
+      const inviteRef = ref(rtdb, `${invitedUser.id}/invites`);
+      const newInviteRef = push(inviteRef);
 
-    const invitedUserId = await getUserByEmail(email);
-    if (invitedUserId !== null) {
-      const invitesData = (
-        await getDoc(doc(db, 'invites', invitedUserId.id))
-      ).data();
+      const grpAlreadyExists = invitedUser.groups.map((grp) => {
+        if (grp.groupId === groupId) {
+          setError('Usuário já está nesse grupo.');
+          return true;
+        }
 
-      const invitesLst = invitesData?.invites ? invitesData?.invites : [];
+        return false;
+      });
 
-      const updatedInvites: Invite[] =
-        invitesLst.length > 0 ? [...invitesLst, newInvite] : [newInvite];
-
-      const oldInvites = (
-        await getDoc(doc(db, 'invites', invitedUserId.id))
-      ).data() as Invite[];
-
-      if (oldInvites === undefined) {
-        await setDoc(doc(db, 'invites', invitedUserId.id), {
-          invites: [newInvite],
-        });
-      } else {
-        await setDoc(doc(db, 'invites', invitedUserId.id), {
-          invites: updatedInvites,
-        });
+      if (grpAlreadyExists?.find((x) => x === true)) {
+        setIsLoading(false);
+        return;
       }
+
+      const inviteAlreadyExists = await get(
+        child(ref(rtdb), `${invitedUser.id}/invites`)
+      ).then((snapshot) => {
+        if (snapshot.exists()) {
+          const userInvites: Invite[] = Object.values(snapshot.val());
+          console.log(userInvites);
+          return userInvites.map((invite) => {
+            if (invite.groupId === groupId) {
+              setError('O usuário já possui um invite para esse grupo.');
+              return true;
+            }
+            return false;
+          });
+        }
+      });
+
+      if (inviteAlreadyExists?.find((x) => x === true)) {
+        setIsLoading(false);
+        return;
+      }
+
+      const [group] = groups.filter((grp) => grp.groupId === groupId);
+
+      const newInvite: Invite = {
+        groupId: group.groupId,
+        groupName: group.name,
+        groupOwner: group.ownerName,
+        groupOwnerEmail: group.ownerEmail,
+        inviteMessage,
+        invitedUserId: invitedUser.id,
+        inviteId: newInviteRef?.key || 'none',
+      };
+
+      await set(newInviteRef, newInvite);
 
       setError('');
       setIsLoading(false);
-      onClose();
+      closeModal();
     } else {
       setIsLoading(false);
       setError('Erro ao enviar convite, tente novamente mais tarde.');
@@ -113,7 +133,7 @@ export function InviteModal({ isOpen, onClose }: InviteModalProps) {
   };
 
   return (
-    <Modal onClose={onClose} isOpen={isOpen} isCentered>
+    <Modal onClose={closeModal} isOpen={isOpen} isCentered>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Convidar Participante</ModalHeader>

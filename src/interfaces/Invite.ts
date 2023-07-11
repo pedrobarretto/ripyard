@@ -4,4 +4,6 @@ export interface Invite {
   groupOwner: string;
   groupOwnerEmail: string;
   inviteMessage: string;
+  invitedUserId: string;
+  inviteId: string;
 }

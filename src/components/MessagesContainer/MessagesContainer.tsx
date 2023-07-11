@@ -12,7 +12,7 @@ import {
 import { ArrowRightIcon } from '@chakra-ui/icons';
 import { useGroups, useUser } from '@/store';
 import { Timestamp } from 'firebase/firestore';
-import { db, rtdb } from '@/config/firebase';
+import { rtdb } from '@/config/firebase';
 import { Message } from '@/interfaces';
 import { Phrase } from '..';
 import { onValue, push, ref, set } from 'firebase/database';
@@ -31,8 +31,7 @@ export function MessagesContainer() {
       onValue(msgsRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
-          console.log('data: ', data);
-          setFilteredMessages(Object.values(data)); // Update filteredMessages with an array of messages
+          setFilteredMessages(Object.values(data));
         } else {
           setFilteredMessages([]);
         }
@@ -47,7 +46,7 @@ export function MessagesContainer() {
     try {
       const messageId = uuid();
       const messageRef = ref(rtdb, `${selectedGroup.groupId}/`);
-      const newMessageRef = push(messageRef); // Generate a new unique key for the message
+      const newMessageRef = push(messageRef);
       const newMessage: Message = {
         message: msg,
         author: user.username,
@@ -57,7 +56,7 @@ export function MessagesContainer() {
         messageId,
         reactions: [],
       };
-      await set(newMessageRef, newMessage); // Set the new message under the unique key
+      await set(newMessageRef, newMessage);
       setMsg('');
     } catch (error) {
       console.log(error);
