@@ -48,7 +48,6 @@ export default function Page() {
         height={320}
       />
       <Text
-        noOfLines={[1, 2, 3]}
         fontSize={['2xl', '3xl', '4xl']}
         color='gray.text'
         textAlign='center'
