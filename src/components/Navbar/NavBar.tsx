@@ -21,7 +21,7 @@ import {
 } from 'firebase/auth';
 import { useGroups, useInvites, useMessages, useUser } from '@/store';
 import { Group, Message, User } from '@/interfaces';
-import { getDoc, doc } from 'firebase/firestore';
+import { getDoc, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { usePathname, useRouter } from 'next/navigation';
 import { useDrawerDisclosure } from '@/context';
 
@@ -44,13 +44,31 @@ export function NavBar() {
         ).data() as User;
         setUser(userData);
 
-        const grpPromises = userData.groups.map((group) => {
-          return getDoc(doc(db, 'groups', group.groupId));
+        const grpPromises = userData.groups.map(async (group) => {
+          const grpDoc = await getDoc(doc(db, 'groups', group.groupId));
+          if (grpDoc.exists()) {
+            return grpDoc;
+          } else {
+            // Acho que o grupo precisa ser rtdb tbm...
+            // Apos deletar um grupo, mesmo com isso de recarregar a pag, um membro que nao recarregou
+            // consegue enviar mensagem, a mensagem eh criada no rtdb...
+            // delete group from user group
+            const newUserGroups = userData.groups.filter(
+              (x) => x.groupId !== group.groupId
+            );
+            await updateDoc(doc(db, 'users', userData.id), {
+              groups: newUserGroups,
+            });
+          }
         });
         const grpData = await Promise.all(grpPromises);
-        const grpLst = grpData.map(
-          (groupData) => JSON.parse(JSON.stringify(groupData.data())) as Group
-        );
+        const grpLst = grpData
+          .map(
+            (groupData) =>
+              groupData?.exists &&
+              (JSON.parse(JSON.stringify(groupData.data())) as Group)
+          )
+          .filter((group) => group !== undefined) as Group[];
         setGroups(grpLst);
 
         const messagesPromises = grpLst.map((group) => {

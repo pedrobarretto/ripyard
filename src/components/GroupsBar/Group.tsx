@@ -1,15 +1,10 @@
 'use client';
-import {
-  Box,
-  IconButton,
-  Text,
-  useDisclosure,
-  useToast,
-} from '@chakra-ui/react';
+import { Box, IconButton, Text, useDisclosure } from '@chakra-ui/react';
 import { ArrowForwardIcon, DeleteIcon } from '@chakra-ui/icons';
 import { Group } from '@/interfaces';
 import { motion } from 'framer-motion';
 import { DeleteGroupModal } from './DeleteGroupModal';
+import { useUser } from '@/store';
 
 const MotionBox = motion(Box);
 
@@ -17,18 +12,24 @@ interface GroupProps {
   group: Group;
   onClick: (group: Group) => void;
   isEditMode: boolean;
+  setLocalGroups: (groups: Group[]) => void;
 }
 
-export function GroupComponent({ group, onClick, isEditMode }: GroupProps) {
+export function GroupComponent({
+  group,
+  onClick,
+  isEditMode,
+  setLocalGroups,
+}: GroupProps) {
   const { onClose, isOpen, onOpen } = useDisclosure();
-  const toast = useToast();
+  const { user } = useUser();
 
   const clickableProps = isEditMode
     ? {
         cursor: 'blocked',
       }
     : {
-        onClick: () => onClick(group),
+        onClick: () => group && onClick(group),
         cursor: 'pointer',
         _hover: { backgroundColor: 'gray.buttonHover' },
         transition: 'background-color 0.5s ease',
@@ -51,7 +52,7 @@ export function GroupComponent({ group, onClick, isEditMode }: GroupProps) {
       {...clickableProps}
     >
       <Text>{group.name}</Text>
-      {isEditMode ? (
+      {isEditMode && group.ownerEmail === user.email ? (
         <IconButton
           icon={<DeleteIcon boxSize={6} color='red.reject' />}
           aria-label='Trash Can'
@@ -64,7 +65,12 @@ export function GroupComponent({ group, onClick, isEditMode }: GroupProps) {
         <ArrowForwardIcon boxSize={6} color='gray.button' />
       )}
 
-      <DeleteGroupModal group={group} isOpen={isOpen} onClose={onClose} />
+      <DeleteGroupModal
+        group={group}
+        isOpen={isOpen}
+        onClose={onClose}
+        setLocalGroups={setLocalGroups}
+      />
     </MotionBox>
   );
 }

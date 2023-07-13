@@ -14,27 +14,53 @@ import {
 import { CustomButton, LoadingButton } from '..';
 import { useState } from 'react';
 import { Group } from '@/interfaces';
+import { deleteDoc, doc } from 'firebase/firestore';
+import { db, rtdb } from '@/config/firebase';
+import { ref, remove } from 'firebase/database';
+import { useGroups, useUser } from '@/store';
 
 interface DeleteGroupModalProps {
   isOpen: boolean;
   onClose: () => void;
   group: Group;
+  setLocalGroups: (groups: Group[]) => void;
 }
 
 export function DeleteGroupModal({
   onClose,
   isOpen,
   group,
+  setLocalGroups,
 }: DeleteGroupModalProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const { user, setUser } = useUser();
+  const { groups, setGroups } = useGroups();
   const toast = useToast();
 
   const handleDeleteGroup = async () => {
     setIsLoading(true);
     try {
       // deletar col do grupo
+      const groupRef = doc(db, 'groups', group.groupId);
+      await deleteDoc(groupRef);
+
       // deletar mensagens do grupo
-      // deletar grupo de todos os membros
+      const msgsRef = ref(rtdb, group.groupId);
+      await remove(msgsRef);
+
+      // Acho que o grupo precisa ser rtdb tbm...
+      // Apos deletar um grupo, mesmo com isso de recarregar a pag, um membro que nao recarregou
+      // consegue enviar mensagem, a mensagem eh criada no rtdb...
+      const newUserGroups = user.groups.filter(
+        (x) => x.groupId !== group.groupId
+      );
+      setUser({ ...user, groups: newUserGroups });
+
+      const newGroups = groups.filter((x) => x.groupId !== group.groupId);
+      setGroups(newGroups);
+      setLocalGroups(newGroups);
+
+      // deletar grupo de todos os membros -> navbar component ao recarregar pag.
     } catch (error) {
       toast({
         status: 'error',
