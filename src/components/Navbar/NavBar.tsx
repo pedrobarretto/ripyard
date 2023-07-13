@@ -2,8 +2,17 @@
 import React, { useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import styles from './Navbar.module.css';
-import { Button, useToast } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  IconButton,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  useColorModeValue,
+} from '@chakra-ui/react';
+import { HamburgerIcon } from '@chakra-ui/icons';
 import { auth, db } from '@/config/firebase';
 import {
   User as FirebaseUser,
@@ -24,7 +33,6 @@ export function NavBar() {
   const { onOpenDrawer } = useDrawerDisclosure();
   const router = useRouter();
   const pathname = usePathname();
-  const toast = useToast();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -83,56 +91,83 @@ export function NavBar() {
     signOut(auth);
   };
 
+  const hoverBgColor = useColorModeValue('gray.200', 'gray.700');
+
   return (
-    <nav className={styles.navbar}>
-      <div className={styles.logo}>
+    <nav
+      style={{
+        background: '#D9D9D9',
+        boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        padding: '10px',
+        margin: 0,
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
         <Link href='/'>
-          <div className={styles.link}>
+          <div
+            style={{
+              cursor: 'pointer',
+              textDecoration: 'underline',
+              color: 'inherit',
+            }}
+          >
             <Image
               src={'/ripyard-logo.png'}
               alt='ripyard-logo'
-              className={styles.logoImage}
+              style={{ maxHeight: 40 }}
               width={40}
               height={40}
             />
           </div>
         </Link>
+        {pathname === '/graveyard' && (
+          <Button
+            colorScheme='custom'
+            _hover={{
+              backgroundColor: 'dark.grpBrnHover',
+              boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)',
+            }}
+            backgroundColor='dark.grpBtn'
+            color='text.antiWhite'
+            marginLeft={10}
+            onClick={onOpenDrawer}
+          >
+            Grupos
+          </Button>
+        )}
       </div>
-      {rawUser.email ? (
-        <div className={styles.buttonContainer}>
-          {pathname === '/graveyard' && (
-            <Button
-              colorScheme='custom'
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          marginRight: 16,
+        }}
+      >
+        {rawUser.email ? (
+          <Menu>
+            <MenuButton
+              as={IconButton}
+              icon={<HamburgerIcon boxSize={8} />}
+              variant='ghost'
+              aria-label='Menu'
               _hover={{
-                backgroundColor: 'dark.grpBrnHover',
-                boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)',
+                backgroundColor: hoverBgColor,
               }}
-              backgroundColor='dark.grpBtn'
-              color='text.antiWhite'
-              marginRight={3}
-              onClick={onOpenDrawer}
-            >
-              Grupos
-            </Button>
-          )}
-
-          <Link href='/' passHref>
-            <Button
-              colorScheme='custom'
-              _hover={{
-                backgroundColor: 'gray.buttonHover',
-                boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)',
-              }}
-              backgroundColor='gray.button'
-              color='text.white'
-              onClick={handlesignOut}
-            >
-              Logout
-            </Button>
-          </Link>
-        </div>
-      ) : (
-        <div className={styles.buttonContainer}>
+              transition='background-color 0.3s'
+            />
+            <MenuList>
+              <MenuItem onClick={handlesignOut}>Logout</MenuItem>
+              <MenuItem onClick={handlesignOut}>Configurações</MenuItem>
+            </MenuList>
+          </Menu>
+        ) : (
           <Link href='/login' passHref>
             <Button
               colorScheme='custom'
@@ -146,8 +181,8 @@ export function NavBar() {
               Entrar
             </Button>
           </Link>
-        </div>
-      )}
+        )}
+      </div>
     </nav>
   );
 }

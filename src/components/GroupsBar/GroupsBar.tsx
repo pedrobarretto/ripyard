@@ -1,5 +1,5 @@
 'use client';
-import { AddIcon, EmailIcon, BellIcon } from '@chakra-ui/icons';
+import { AddIcon, EmailIcon, BellIcon, EditIcon } from '@chakra-ui/icons';
 import {
   Button,
   Drawer,
@@ -27,9 +27,10 @@ export function GroupsBar() {
   const checkInviteModal = useDisclosure();
   const { groups, setSelectedGroup } = useGroups();
   const { invites, setInvites } = useInvites();
-  const [localGroups, setLocalGroups] = useState<Group[]>(groups);
   const { isOpenDrawer, onCloseDrawer } = useDrawerDisclosure();
   const { user } = useUser();
+  const [localGroups, setLocalGroups] = useState<Group[]>(groups);
+  const [isEditMode, setIsEditMode] = useState(false);
 
   useEffect(() => {
     const inviteRef = ref(rtdb, `${user.id}/invites`);
@@ -53,11 +54,38 @@ export function GroupsBar() {
     onCloseDrawer();
   };
 
+  const activateEditGroups = () => {
+    setIsEditMode(!isEditMode);
+  };
+
   return (
     <Drawer placement='left' isOpen={isOpenDrawer} onClose={onCloseDrawer}>
       <DrawerOverlay />
       <DrawerContent>
-        <DrawerHeader borderBottomWidth='1px'>Grupos</DrawerHeader>
+        <DrawerHeader borderBottomWidth='1px'>
+          <Flex align={'center'} justify={'space-between'}>
+            <span>Grupos</span>
+            <Button
+              colorScheme='custom'
+              _hover={{
+                backgroundColor: 'gray.buttonHover',
+                boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)',
+              }}
+              backgroundColor='gray.button'
+              color='text.white'
+              style={{
+                flexShrink: '0',
+                height: '40px',
+                overflow: 'hidden',
+                width: '40px',
+                borderRadius: 50,
+              }}
+              onClick={activateEditGroups}
+            >
+              <EditIcon boxSize={5} />
+            </Button>
+          </Flex>
+        </DrawerHeader>
         <Flex align={'center'} justify={'space-between'} padding={4}>
           <Text fontSize={'xl'} color='gray.text' textAlign='center'>
             Grupos
@@ -138,6 +166,7 @@ export function GroupsBar() {
                   group={group}
                   key={group.groupId}
                   onClick={() => onSelectGroup(group)}
+                  isEditMode={isEditMode}
                 />
               );
             })

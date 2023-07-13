@@ -20,11 +20,15 @@ export function LoadingButton({
   return (
     <Button
       colorScheme='custom'
-      _hover={{
-        backgroundColor: 'gray.buttonHover',
-        boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)',
-      }}
-      backgroundColor='gray.button'
+      _hover={
+        rest._hover
+          ? rest._hover
+          : {
+              background: 'gray.buttonHover',
+              boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)',
+            }
+      }
+      backgroundColor={rest.background ? rest.background : 'gray.button'}
       color='text.white'
       onClick={onClick}
       {...rest}
