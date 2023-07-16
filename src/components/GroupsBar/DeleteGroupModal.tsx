@@ -14,7 +14,7 @@ import {
 import { CustomButton, LoadingButton } from '..';
 import { useState } from 'react';
 import { Group } from '@/interfaces';
-import { deleteDoc, doc } from 'firebase/firestore';
+import { deleteDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db, rtdb } from '@/config/firebase';
 import { ref, remove } from 'firebase/database';
 import { useGroups, useUser } from '@/store';
@@ -35,22 +35,37 @@ export function DeleteGroupModal({
   const [isLoading, setIsLoading] = useState(false);
   const { user, setUser } = useUser();
   const { groups, setGroups } = useGroups();
+  const [email, setEmail] = useState('');
   const toast = useToast();
 
   const handleDeleteGroup = async () => {
     setIsLoading(true);
     try {
-      // deletar col do grupo
       const groupRef = doc(db, 'groups', group.groupId);
-      await deleteDoc(groupRef);
+      const groupData = await getDoc(groupRef);
 
-      // deletar mensagens do grupo
-      const msgsRef = ref(rtdb, group.groupId);
-      await remove(msgsRef);
+      const newOwner = group.members.find((x) => x.email === email);
 
-      // Acho que o grupo precisa ser rtdb tbm...
-      // Apos deletar um grupo, mesmo com isso de recarregar a pag, um membro que nao recarregou
-      // consegue enviar mensagem, a mensagem eh criada no rtdb...
+      if (groupData.exists()) {
+        const data = groupData.data() as Group;
+
+        if (data.members.length === 1) {
+          await deleteDoc(groupRef);
+
+          const msgsRef = ref(rtdb, group.groupId);
+          await remove(msgsRef);
+        } else {
+          const newMembers = data.members.filter((x) => x.userId !== user.id);
+
+          await updateDoc(groupRef, {
+            members: newMembers,
+            ownerEmail: email,
+            ownerId: newOwner?.userId,
+            ownerName: newOwner?.username,
+          });
+        }
+      }
+
       const newUserGroups = user.groups.filter(
         (x) => x.groupId !== group.groupId
       );
@@ -59,8 +74,6 @@ export function DeleteGroupModal({
       const newGroups = groups.filter((x) => x.groupId !== group.groupId);
       setGroups(newGroups);
       setLocalGroups(newGroups);
-
-      // deletar grupo de todos os membros -> navbar component ao recarregar pag.
     } catch (error) {
       toast({
         status: 'error',

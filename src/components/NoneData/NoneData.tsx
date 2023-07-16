@@ -11,7 +11,6 @@ export function NoneData({ text }: NoneDataProps) {
     <>
       <div
         style={{
-          borderRadius: '10px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',

@@ -57,6 +57,19 @@ export function CheckInvites({
         { groupId: invite.groupId, groupName: invite.groupName },
       ];
 
+      const grp = await getDoc(doc(db, 'groups', invite.groupId));
+
+      if (grp.exists()) {
+        const data = grp.data() as Group;
+        const newMembers = [
+          ...data.members,
+          { email: user.email, userId: user.id, username: user.username },
+        ];
+        await updateDoc(doc(db, 'groups', invite.groupId), {
+          members: newMembers,
+        });
+      }
+
       await updateDoc(doc(db, 'users', user.id), { groups: newUserGroups });
       setUser({ ...user, groups: newUserGroups });
 
