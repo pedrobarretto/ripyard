@@ -13,6 +13,7 @@ interface GroupProps {
   onClick: (group: Group) => void;
   isEditMode: boolean;
   setLocalGroups: (groups: Group[]) => void;
+  setSelectedGroup: (group: Group) => void;
 }
 
 export function GroupComponent({
@@ -20,6 +21,7 @@ export function GroupComponent({
   onClick,
   isEditMode,
   setLocalGroups,
+  setSelectedGroup,
 }: GroupProps) {
   const { onClose, isOpen, onOpen } = useDisclosure();
   const { user } = useUser();
@@ -70,6 +72,7 @@ export function GroupComponent({
         isOpen={isOpen}
         onClose={onClose}
         setLocalGroups={setLocalGroups}
+        setSelectedGroup={setSelectedGroup}
       />
     </MotionBox>
   );

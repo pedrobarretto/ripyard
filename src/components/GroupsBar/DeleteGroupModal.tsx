@@ -10,6 +10,8 @@ import {
   useToast,
   Text,
   Button,
+  Select,
+  Stack,
 } from '@chakra-ui/react';
 import { CustomButton, LoadingButton } from '..';
 import { useState } from 'react';
@@ -24,6 +26,7 @@ interface DeleteGroupModalProps {
   onClose: () => void;
   group: Group;
   setLocalGroups: (groups: Group[]) => void;
+  setSelectedGroup: (group: Group) => void;
 }
 
 export function DeleteGroupModal({
@@ -69,6 +72,11 @@ export function DeleteGroupModal({
       const newUserGroups = user.groups.filter(
         (x) => x.groupId !== group.groupId
       );
+
+      await updateDoc(doc(db, 'users', user.id), {
+        groups: newUserGroups,
+      });
+
       setUser({ ...user, groups: newUserGroups });
 
       const newGroups = groups.filter((x) => x.groupId !== group.groupId);
@@ -92,10 +100,38 @@ export function DeleteGroupModal({
         <ModalHeader>Deletar Grupo</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Text>
-            <strong>Certeza</strong> que quer <strong>deletar</strong> o grupo{' '}
-            {group.name}?
-          </Text>
+          <Stack spacing={3}>
+            <Text>
+              Você tem <strong>certeza</strong> que gostaria de{' '}
+              <strong style={{ color: '#de5757' }}>
+                {group.members.length > 1 ? 'sair ' : 'deletar '}
+              </strong>
+              {group.members.length > 1 ? 'do ' : 'o '}
+              grupo <strong>{group.name}</strong>?
+            </Text>
+            {group.members.length > 1 && (
+              <>
+                <Text>
+                  Escolha alguém para ser o novo administrador do grupo:
+                </Text>
+                <Select
+                  variant='filled'
+                  width={['20rem', 'sm']}
+                  placeholder='Escolha um grupo'
+                  onChange={(event) => setEmail(event.target.value)}
+                >
+                  {group.members.map((member) => {
+                    if (member.userId !== user.id)
+                      return (
+                        <option value={member.email} key={member.userId}>
+                          {member.email}
+                        </option>
+                      );
+                  })}
+                </Select>
+              </>
+            )}
+          </Stack>
         </ModalBody>
         <ModalFooter>
           <LoadingButton
@@ -103,7 +139,7 @@ export function DeleteGroupModal({
             isLoading={isLoading}
             text='Sim, deletar'
             onClick={handleDeleteGroup}
-            isDisabled={isLoading}
+            isDisabled={isLoading || email.length === 0}
             background={'red.reject'}
             _hover={{
               background: 'red.hover',
