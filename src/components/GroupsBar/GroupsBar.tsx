@@ -167,6 +167,8 @@ export function GroupsBar() {
                   key={group.groupId}
                   onClick={() => onSelectGroup(group)}
                   isEditMode={isEditMode}
+                  setLocalGroups={setLocalGroups}
+                  setSelectedGroup={setSelectedGroup}
                 />
               );
             })
