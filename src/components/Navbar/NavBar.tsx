@@ -49,10 +49,6 @@ export function NavBar() {
           if (grpDoc.exists()) {
             return grpDoc;
           } else {
-            // Acho que o grupo precisa ser rtdb tbm...
-            // Apos deletar um grupo, mesmo com isso de recarregar a pag, um membro que nao recarregou
-            // consegue enviar mensagem, a mensagem eh criada no rtdb...
-            // delete group from user group
             const newUserGroups = userData.groups.filter(
               (x) => x.groupId !== group.groupId
             );
@@ -181,8 +177,8 @@ export function NavBar() {
               transition='background-color 0.3s'
             />
             <MenuList>
+              {/* <MenuItem onClick={handlesignOut}>Configurações</MenuItem> */}
               <MenuItem onClick={handlesignOut}>Logout</MenuItem>
-              <MenuItem onClick={handlesignOut}>Configurações</MenuItem>
             </MenuList>
           </Menu>
         ) : (
