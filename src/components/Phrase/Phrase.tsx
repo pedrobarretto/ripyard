@@ -1,6 +1,5 @@
 'use client';
 import { Message } from '@/interfaces';
-import Image from 'next/image';
 
 interface PhraseProps {
   img: any;
@@ -23,12 +22,7 @@ export function Phrase({ message, img, isFromUser }: PhraseProps) {
         gap: 10,
       }}
     >
-      <Image
-        src={img}
-        alt={'Imagem do autor da frase'}
-        width={40}
-        height={40}
-      />
+      <img src={img} alt={'Imagem do autor da frase'} width={40} height={40} />
       <div
         style={{
           display: 'flex',

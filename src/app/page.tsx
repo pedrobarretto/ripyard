@@ -3,7 +3,6 @@ import { CustomButton, Phrase } from '@/components';
 import { Message } from '@/interfaces';
 import { useUser } from '@/store';
 import { Container, Text, VStack } from '@chakra-ui/react';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Timestamp } from 'firebase/firestore';
 
@@ -41,8 +40,8 @@ export default function Page() {
 
   return (
     <Container centerContent pt={10}>
-      <Image
-        src={'/ripyard-name-logo.png'}
+      <img
+        src='/ripyard-name-logo.png'
         alt='ripyard-logo'
         width={320}
         height={320}

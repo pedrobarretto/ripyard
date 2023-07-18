@@ -1,7 +1,6 @@
 'use client';
 import React, { useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import {
   Box,
   Button,
@@ -132,8 +131,8 @@ export function NavBar() {
               color: 'inherit',
             }}
           >
-            <Image
-              src={'/ripyard-logo.png'}
+            <img
+              src='/ripyard-logo.png'
               alt='ripyard-logo'
               style={{ maxHeight: 40 }}
               width={40}
