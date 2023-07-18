@@ -64,7 +64,7 @@ export function GroupsBar() {
       <DrawerContent>
         <DrawerHeader borderBottomWidth='1px'>
           <Flex align={'center'} justify={'space-between'}>
-            <span>Grupos</span>
+            <span>Groups</span>
             <Button
               colorScheme='custom'
               _hover={{
@@ -88,7 +88,7 @@ export function GroupsBar() {
         </DrawerHeader>
         <Flex align={'center'} justify={'space-between'} padding={4}>
           <Text fontSize={'xl'} color='gray.text' textAlign='center'>
-            Grupos
+            Groups
           </Text>
 
           <Stack spacing={3} direction={'row'}>
@@ -158,7 +158,7 @@ export function GroupsBar() {
 
         <Stack spacing={3} direction={'column'}>
           {localGroups.length === 0 ? (
-            <NoneData text='Crie um grupo e convide seus amigos!' />
+            <NoneData text='Create a group and invite your friends!' />
           ) : (
             localGroups.map((group) => {
               return (

@@ -1,22 +1,22 @@
 export function mapErrorCodeToMessage(authCode: string) {
   switch (authCode) {
     case 'auth/wrong-password':
-      return 'Email ou senha incorretos';
+      return 'Incorrect email or password';
     case 'auth/invalid-email':
-      return 'Email ou senha incorretos';
+      return 'Incorrect email or password';
     case 'auth/too-many-requests':
-      return 'Esse usuário fez muitas requisições, aguarde um pouco ou tente entrar com outra conta'
+      return 'This user has made too many requests. Please wait a moment or try logging in with another account.';
     case 'auth/email-already-in-use':
-      return 'Já existe uma conta com esse email';
+      return 'An account with this email already exists';
     case 'auth/user-not-found':
-      return 'Email ou senha inválidos';
+      return 'Incorrect email or password';
     case 'auth/weak-password':
-      return 'Sua senha é muito fraca, tente cadastrar uma senha mais forte';
+      return 'Your password is too weak. Please choose a stronger password';
     // case 'auth/user-not-found':
-    //   return 'Erro ao buscar pelo usuário';
+    //   return 'Error while searching for the user';
     // case 'auth/user-disabled':
-    //   return 'Usuário teve sua conta desabilitada';
+    //   return 'User account is disabled';
     default:
-      return 'Desculpe, ocorreu um erro inesperado';
+      return 'Sorry, an unexpected error occurred';
   }
 }

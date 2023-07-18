@@ -62,7 +62,7 @@ export function InviteModal({ isOpen, onClose }: InviteModalProps) {
     try {
       const signInMethods = await fetchSignInMethodsForEmail(auth, email);
       if (signInMethods.length <= 0) {
-        setError('Email não existe!');
+        setError('Email does not exist!');
         return;
       }
 
@@ -74,7 +74,7 @@ export function InviteModal({ isOpen, onClose }: InviteModalProps) {
 
         const grpAlreadyExists = invitedUser.groups.map((grp) => {
           if (grp.groupId === groupId) {
-            setError('Usuário já está nesse grupo.');
+            setError('User is already in this group.');
             return true;
           }
 
@@ -94,7 +94,7 @@ export function InviteModal({ isOpen, onClose }: InviteModalProps) {
             console.log(userInvites);
             return userInvites.map((invite) => {
               if (invite.groupId === groupId) {
-                setError('O usuário já possui um invite para esse grupo.');
+                setError('The user already has an invite for this group.');
                 return true;
               }
               return false;
@@ -126,14 +126,14 @@ export function InviteModal({ isOpen, onClose }: InviteModalProps) {
         closeModal();
       } else {
         setIsLoading(false);
-        setError('Erro ao enviar convite, tente novamente mais tarde.');
+        setError('Error sending invitation, please try again later.');
       }
     } catch (error) {
       setIsLoading(false);
       setError('');
       toast({
         description:
-          'Desculpe, ocorreu um erro ao enviar seu convite, tente novamente mais tarde.',
+          'Sorry, an error occurred while sending your invitation, please try again later.',
         status: 'error',
         duration: 9000,
         isClosable: true,
@@ -145,19 +145,19 @@ export function InviteModal({ isOpen, onClose }: InviteModalProps) {
     <Modal onClose={closeModal} isOpen={isOpen} isCentered>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Convidar Participante</ModalHeader>
+        <ModalHeader>Invite Participant</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Stack spacing={3}>
             <CustomInput
               value={email}
-              placeholder='Email do convidado'
+              placeholder='Guest email'
               setValue={setEmail}
             />
             <Select
               variant='filled'
               width={['20rem', 'sm']}
-              placeholder='Escolha um grupo'
+              placeholder='Choose a group'
               onChange={(event) => setGroupId(event.target.value)}
             >
               {groups.map((grp) => {
@@ -169,7 +169,7 @@ export function InviteModal({ isOpen, onClose }: InviteModalProps) {
               })}
             </Select>
             <Textarea
-              placeholder='Deixe uma mensagem em seu convite!'
+              placeholder='Leave a message in your invitation!'
               value={inviteMessage}
               onChange={(event) => setInviteMessage(event.target.value)}
               width={['20rem', 'sm']}
@@ -183,7 +183,7 @@ export function InviteModal({ isOpen, onClose }: InviteModalProps) {
           <LoadingButton
             isLoading={isLoading}
             isDisabled={email.length === 0 || groupId.length === 0}
-            text='Convidar participante'
+            text='Invite participant'
             onClick={handleInvite}
           />
         </ModalFooter>

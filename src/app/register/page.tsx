@@ -55,8 +55,7 @@ export default function Page() {
         });
       } else {
         toast({
-          description:
-            'Desculpe, ocorreu um erro inesperado ao criar sua conta',
+          description: 'Sorry, an unexpected error occurred while creating your account',
           status: 'error',
           duration: 9000,
           isClosable: true,
@@ -96,7 +95,7 @@ export default function Page() {
         />
         <Input
           variant='filled'
-          placeholder='Usuário'
+          placeholder='Username'
           width='sm'
           value={username}
           onChange={(event) => setUsername(event.target.value)}
@@ -104,7 +103,7 @@ export default function Page() {
         <InputGroup width='sm'>
           <Input
             variant='filled'
-            placeholder='Senha'
+            placeholder='Password'
             width='sm'
             value={password}
             onChange={(event) => setPassword(event.target.value)}
@@ -118,19 +117,19 @@ export default function Page() {
               onClick={handleClick}
               style={{ backgroundColor: '#969696' }}
             >
-              {show ? 'Esconder' : 'Mostrar'}
+              {show ? 'Hide' : 'Show'}
             </Button>
           </InputRightElement>
         </InputGroup>
         <LoadingButton
           isLoading={isLoading}
-          text='Criar'
+          text='Create'
           onClick={handleRegister}
           width={'sm'}
         />
         <div style={{ textAlign: 'center' }}>
-          <p>Já tem uma conta?</p>
-          <Link href='/login'>Faça o login aqui!</Link>
+          <p>Already have an account?</p>
+          <Link href='/login'>Log in here!</Link>
         </div>
       </Container>
     </div>
