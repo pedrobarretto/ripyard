@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import {
+  Box,
   Button,
   Input,
   InputGroup,
@@ -64,20 +65,17 @@ export function MessagesContainer() {
   };
 
   return (
-    <div
-      style={{
-        width: '100%',
-        height: '90vh',
-        flexShrink: '0',
-        borderRadius: '10px',
-        background: '#D9D9D9',
-        boxShadow: '0px 4px 4px 0px rgba(0, 0, 0, 0.25)',
-        padding: 10,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        margin: 0,
-      }}
+    <Box
+      flex="1"
+      borderRadius="10px"
+      background="#D9D9D9"
+      boxShadow="0px 4px 4px 0px rgba(0, 0, 0, 0.25)"
+      padding={2}
+      display="flex"
+      flexDirection="column"
+      justifyContent="space-between"
+      margin={0}
+      height='calc(90vh - 30px)'
     >
       <Stack
         direction='column'
@@ -127,6 +125,6 @@ export function MessagesContainer() {
           </Button>
         </InputRightElement>
       </InputGroup>
-    </div>
+    </Box>
   );
 }

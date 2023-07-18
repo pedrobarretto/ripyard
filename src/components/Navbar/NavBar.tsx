@@ -2,7 +2,6 @@
 import React, { useEffect } from 'react';
 import Link from 'next/link';
 import {
-  Box,
   Button,
   IconButton,
   Menu,
@@ -20,7 +19,7 @@ import {
 } from 'firebase/auth';
 import { useGroups, useInvites, useMessages, useUser } from '@/store';
 import { Group, Message, User } from '@/interfaces';
-import { getDoc, doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { getDoc, doc, updateDoc } from 'firebase/firestore';
 import { usePathname, useRouter } from 'next/navigation';
 import { useDrawerDisclosure } from '@/context';
 
@@ -176,7 +175,7 @@ export function NavBar() {
               transition='background-color 0.3s'
             />
             <MenuList>
-              {/* <MenuItem onClick={handlesignOut}>Configurações</MenuItem> */}
+              <MenuItem onClick={() => router.push('/graveyard')}>Grupos</MenuItem>
               <MenuItem onClick={handlesignOut}>Logout</MenuItem>
             </MenuList>
           </Menu>
