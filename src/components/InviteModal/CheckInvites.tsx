@@ -84,8 +84,8 @@ export function CheckInvites({
       setLocalGroups(grpLst);
       setIsLoadingAccept(false);
       toast({
-        title: 'Convite aceito',
-        description: `Você aceitou o convite para o grupo ${invite.groupName}.`,
+        title: 'Invitation Accepted',
+        description: `You accepted the invitation to the group ${invite.groupName}.`,
         status: 'success',
         duration: 9000,
         isClosable: true,
@@ -93,8 +93,8 @@ export function CheckInvites({
     } catch (error) {
       setIsLoadingAccept(false);
       toast({
-        title: 'Erro :(',
-        description: `Erro ao aceitar o convite para o grupo ${invite.groupName}.`,
+        title: 'Error :(',
+        description: `Error accepting the invitation to the group ${invite.groupName}.`,
         status: 'error',
         duration: 9000,
         isClosable: true,
@@ -107,7 +107,7 @@ export function CheckInvites({
     try {
       await removeInviteFromRTD(invite);
       toast({
-        description: `Você rejeitou o convite para o grupo ${invite.groupName}.`,
+        description: `You declined the invitation to the group ${invite.groupName}.`,
         status: 'success',
         duration: 9000,
         isClosable: true,
@@ -115,7 +115,7 @@ export function CheckInvites({
       setIsLoadingReject(false);
     } catch (error) {
       toast({
-        description: `Erro ao rejeitar o convite para o grupo ${invite.groupName}.`,
+        description: `Error declining the invitation to the group ${invite.groupName}.`,
         status: 'error',
         duration: 9000,
         isClosable: true,
@@ -128,11 +128,11 @@ export function CheckInvites({
     <Modal onClose={onClose} isOpen={isOpen} isCentered>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Convites Pendentes</ModalHeader>
+        <ModalHeader>Pending Invitations</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           {invites.length === 0 && (
-            <Text>Você não tem nenhum convite pendente.</Text>
+            <Text>You have no pending invitations.</Text>
           )}
           {invites.map((invite) => {
             return (
@@ -143,9 +143,9 @@ export function CheckInvites({
               >
                 <Flex align={'center'} justify={'space-between'}>
                   <Stack>
-                    <span>Convite para: {invite.groupName}</span>
-                    <span>Enviado por: {invite.groupOwnerEmail}</span>
-                    <span>Mensagem: {invite.inviteMessage}</span>
+                    <span>Invitation for: {invite.groupName}</span>
+                    <span>Sent by: {invite.groupOwnerEmail}</span>
+                    <span>Message: {invite.inviteMessage}</span>
                   </Stack>
                   <Stack>
                     <Button

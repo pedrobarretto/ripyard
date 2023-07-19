@@ -2,7 +2,7 @@
 import { CustomButton, Phrase } from '@/components';
 import { Message } from '@/interfaces';
 import { useUser } from '@/store';
-import { Container, Text, VStack } from '@chakra-ui/react';
+import { Container, Stack, Text, VStack } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
 import { Timestamp } from 'firebase/firestore';
 
@@ -24,7 +24,8 @@ export default function Page() {
     if (rawUser?.email) {
       return (
         <CustomButton
-          text='Ir para meus grupos'
+          marginBottom={10}
+          text='Go to My Groups'
           onClick={() => router.push('/graveyard')}
         />
       );
@@ -32,7 +33,8 @@ export default function Page() {
 
     return (
       <CustomButton
-        text='Crie agora sua conta'
+        marginBottom={10}
+        text='Create Your Account Now'
         onClick={() => router.push('/register')}
       />
     );
@@ -50,16 +52,14 @@ export default function Page() {
         fontSize={['2xl', '3xl', '4xl']}
         color='gray.text'
         textAlign='center'
-        mt={4}
       >
-        Eternize suas frases e as de seus amigos na lápide!
+        Eternalize your own and your friends&apos; phrases on the tombstone!
       </Text>
-      <VStack spacing={4} mt={8}>
+      <Stack spacing={4} mt={8} marginBottom={4}>
         <Phrase
           message={{
             ...mockMsg,
-            message:
-              'Escreva as frases mais marcantes suas e de seus amigos aqui!',
+            message: 'Write your most memorable phrases here!',
             createdAt: Timestamp.fromDate(new Date()),
             author: 'Pedro',
           }}
@@ -70,7 +70,7 @@ export default function Page() {
           message={{
             ...mockMsg,
             message:
-              'Crie um grupo, adicione seus amigos, e salve seus momentos em texto!',
+              'Create a group, add your friends, and save your moments in text!',
             createdAt: Timestamp.fromDate(new Date()),
             author: 'Diego',
           }}
@@ -81,15 +81,15 @@ export default function Page() {
           message={{
             ...mockMsg,
             message:
-              'Crie agora sua conta, e convide seus amigos para colecionar frases e risadas!',
+              'Create your account now and invite your friends to collect phrases and laughter!',
             createdAt: Timestamp.fromDate(new Date()),
             author: 'Pablo',
           }}
           img={'/ripyard-logo.png'}
           isFromUser={false}
         />
-        {handleButton()}
-      </VStack>
+      </Stack>
+      {handleButton()}
     </Container>
   );
 }
