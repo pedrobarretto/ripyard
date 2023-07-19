@@ -17,7 +17,6 @@ import { rtdb } from '@/config/firebase';
 import { Message } from '@/interfaces';
 import { Phrase } from '..';
 import { onValue, push, ref, set } from 'firebase/database';
-import { v4 as uuid } from 'uuid';
 
 export function MessagesContainer() {
   const [msg, setMsg] = useState('');
@@ -85,14 +84,14 @@ export function MessagesContainer() {
         p={4}
       >
         {filteredMessages.length === 0 ? (
-          <Text>Não há frases neste grupo.</Text>
+          <Text>There are no phrases in this group.</Text>
         ) : (
           filteredMessages.map((message) => (
             <Phrase
               img={'/ripyard-logo.png'}
               isFromUser={message.author === user.username}
               message={message}
-              key={message.messageId} // Make sure each message has a unique key
+              key={message.messageId}
             />
           ))
         )}
@@ -103,7 +102,7 @@ export function MessagesContainer() {
           variant='filled'
           pr='4.5rem'
           type='text'
-          placeholder='Escreva sua frase aqui!'
+          placeholder='Write your phrase here!'
           value={msg}
           onChange={(event) => setMsg(event.target.value)}
           isDisabled={selectedGroup?.groupId === undefined}

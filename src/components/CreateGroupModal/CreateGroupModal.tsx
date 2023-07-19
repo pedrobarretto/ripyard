@@ -72,7 +72,7 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
       setGroups([...groups, groupData]);
       setGroupName('');
       toast({
-        description: `Grupo ${groupData.name} criado com sucesso!`,
+        description: `Group ${groupData.name} created successfully!`,
         status: 'success',
         duration: 9000,
         isClosable: true,
@@ -80,8 +80,7 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
       onClose();
     } catch (error) {
       toast({
-        description:
-          'Desculpe, ocorreu um erro ao criar seu grupo, tente novamente mais tarde.',
+        description: 'Sorry, an error occurred while creating your group. Please try again later.',
         status: 'error',
         duration: 9000,
         isClosable: true,
@@ -94,12 +93,12 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
     <Modal onClose={onClose} isOpen={isOpen} isCentered>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Novo Grupo</ModalHeader>
+        <ModalHeader>New Group</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <CustomInput
             value={groupName}
-            placeholder='Nome do grupo'
+            placeholder='Group Name'
             setValue={setGroupName}
           />
         </ModalBody>
@@ -107,7 +106,7 @@ export function CreateGroupModal({ isOpen, onClose }: CreateGroupModalProps) {
           <LoadingButton
             width={'xm'}
             isLoading={isLoading}
-            text='Criar Grupo'
+            text='Create Group'
             onClick={createGroup}
             isDisabled={groupName.length === 0}
           />

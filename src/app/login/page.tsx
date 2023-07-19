@@ -53,7 +53,7 @@ export default function Page() {
         });
       } else {
         toast({
-          description: 'Erro inesperado ao realizar login',
+          description: 'Unexpected error occurred while logging in',
           status: 'error',
           duration: 9000,
           isClosable: true,
@@ -94,7 +94,7 @@ export default function Page() {
         <InputGroup width='sm'>
           <Input
             variant='filled'
-            placeholder='Senha'
+            placeholder='Password'
             width='sm'
             value={password}
             onChange={(event) => setPassword(event.target.value)}
@@ -108,20 +108,20 @@ export default function Page() {
               onClick={handleClick}
               style={{ backgroundColor: '#969696' }}
             >
-              {show ? 'Esconder' : 'Mostrar'}
+              {show ? 'Hide' : 'Show'}
             </Button>
           </InputRightElement>
         </InputGroup>
         <LoadingButton
-          text='Entrar'
+          text='Log In'
           onClick={handleLogin}
           width={'sm'}
           isLoading={isLoading}
         />
         <div style={{ textAlign: 'center' }}>
-          <p>Ainda não criou sua conta?</p>
+          <p>Don&apos;t have an account yet?</p>
           <Link href='/register' passHref>
-            <Text _hover={{ textDecoration: 'underline' }}>Registrar</Text>
+            <Text _hover={{ textDecoration: 'underline' }}>Register</Text>
           </Link>
         </div>
       </Container>

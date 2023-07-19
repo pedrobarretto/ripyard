@@ -151,7 +151,7 @@ export function NavBar() {
             marginLeft={10}
             onClick={onOpenDrawer}
           >
-            Grupos
+            Groups
           </Button>
         )}
       </div>
@@ -175,7 +175,7 @@ export function NavBar() {
               transition='background-color 0.3s'
             />
             <MenuList>
-              <MenuItem onClick={() => router.push('/graveyard')}>Grupos</MenuItem>
+              <MenuItem onClick={() => router.push('/graveyard')}>Groups</MenuItem>
               <MenuItem onClick={handlesignOut}>Logout</MenuItem>
             </MenuList>
           </Menu>
@@ -190,7 +190,7 @@ export function NavBar() {
               backgroundColor='gray.button'
               color='text.white'
             >
-              Entrar
+              Login
             </Button>
           </Link>
         )}

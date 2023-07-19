@@ -87,7 +87,7 @@ export function DeleteGroupModal({
         status: 'error',
         duration: 9000,
         isClosable: true,
-        description: `Erro ao deletar grupo ${group.name}, tente novamente mais tarde.`,
+        description: `Error deleting group ${group.name}, please try again later.`,
       });
     }
     setIsLoading(false);
@@ -97,27 +97,27 @@ export function DeleteGroupModal({
     <Modal onClose={onClose} isOpen={isOpen} isCentered>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Deletar Grupo</ModalHeader>
+        <ModalHeader>Delete Group</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Stack spacing={3}>
             <Text>
-              Você tem <strong>certeza</strong> que gostaria de{' '}
+              Are you <strong>sure</strong> you want to{' '}
               <strong style={{ color: '#de5757' }}>
-                {group.members.length > 1 ? 'sair ' : 'deletar '}
+                {group.members.length > 1 ? 'leave ' : 'delete '}
               </strong>
-              {group.members.length > 1 ? 'do ' : 'o '}
-              grupo <strong>{group.name}</strong>?
+              {group.members.length > 1 ? 'the ' : 'this '}
+              group <strong>{group.name}</strong>?
             </Text>
             {group.members.length > 1 && (
               <>
                 <Text>
-                  Escolha alguém para ser o novo administrador do grupo:
+                  Choose someone to be the new group administrator:
                 </Text>
                 <Select
                   variant='filled'
                   width={['20rem', 'sm']}
-                  placeholder='Escolha um grupo'
+                  placeholder='Choose a member'
                   onChange={(event) => setEmail(event.target.value)}
                 >
                   {group.members.map((member) => {
@@ -137,7 +137,7 @@ export function DeleteGroupModal({
           <LoadingButton
             width={'xm'}
             isLoading={isLoading}
-            text='Sim, deletar'
+            text='Yes, delete'
             onClick={handleDeleteGroup}
             isDisabled={isLoading || email.length === 0}
             background={'red.reject'}
@@ -153,7 +153,7 @@ export function DeleteGroupModal({
             onClick={onClose}
             isDisabled={isLoading}
             background={'green.accept'}
-            text='Não quero deletar'
+            text="I don't want to delete"
             _hover={{
               background: 'green.hover',
               boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)',
