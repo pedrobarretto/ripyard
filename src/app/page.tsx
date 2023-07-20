@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 import { CustomButton, Phrase } from '@/components';
 import { Message } from '@/interfaces';
@@ -53,7 +54,7 @@ export default function Page() {
         color='gray.text'
         textAlign='center'
       >
-        Eternalize your own and your friends&apos; phrases on the tombstone!
+        Eternalize yours and your friends&apos; phrases on the tombstone!
       </Text>
       <Stack spacing={4} mt={8} marginBottom={4}>
         <Phrase

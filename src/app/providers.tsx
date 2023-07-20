@@ -15,6 +15,7 @@ const colors = {
     text: '#717171',
     input: '#EBEBEB',
     phrase: '#BEBEBE',
+    background: '#D9D9D9'
   },
   text: {
     white: '#fff',

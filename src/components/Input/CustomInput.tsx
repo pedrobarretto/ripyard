@@ -1,11 +1,12 @@
 'use client';
-import { Input, ResponsiveValue, ThemingProps } from '@chakra-ui/react';
+import { Input, ResponsiveValue } from '@chakra-ui/react';
 
 interface CustomInputProps {
   placeholder: string;
   value: string | number;
   setValue: (x: any) => void;
   width?: ResponsiveValue<string>;
+  isDisabled?: boolean;
 }
 
 export function CustomInput({
@@ -13,6 +14,7 @@ export function CustomInput({
   setValue,
   value,
   width,
+  isDisabled
 }: CustomInputProps) {
   return (
     <Input
@@ -22,6 +24,7 @@ export function CustomInput({
       width={width ? width : ['20rem', 'sm']}
       value={value}
       onChange={(event) => setValue(event.target.value)}
+      isDisabled={isDisabled ? isDisabled : false}
     />
   );
 }
