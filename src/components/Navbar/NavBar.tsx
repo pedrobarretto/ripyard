@@ -41,6 +41,7 @@ export function NavBar() {
         const userData = (
           await getDoc(doc(db, 'users', user.uid))
         ).data() as User;
+        console.log(userData);
         setUser(userData);
 
         const grpPromises = userData.groups.map(async (group) => {

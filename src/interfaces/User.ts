@@ -6,7 +6,7 @@ export interface User {
   createdAt: Timestamp;
   id: string;
   groups: UserGroup[];
-  profileImage?: string;
+  profileImageURL?: string;
 }
 
 export interface UserGroup {
