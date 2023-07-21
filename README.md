@@ -1,34 +1,47 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Ripyard - Eternalizing Memories
 
-## Getting Started
+Ripyard is a web application that allows users to eternalize their and their friends' phrases on a virtual tombstone, preserving special and funny moments in the form of text. With Ripyard, users can create an account, form groups, invite others to their groups, choose a profile picture, and send messages to their groups to commemorate those memorable moments.
 
-First, run the development server:
+![](https://github.com/pedrobarretto/ripyard/assets/61850145/77ddd312-725f-43a2-9af3-77ae4dbb84c8)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+## Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- User Authentication: Users can create an account and log in to access the full features of the platform.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Group Creation and Invitation: Users can create groups and invite others to join their groups, fostering a community of friends and family.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+- Profile Picture: Users can upload and set a profile picture to personalize their accounts.
 
-## Learn More
+- Message Sharing: Users can send messages to their groups, allowing them to share and cherish special moments.
 
-To learn more about Next.js, take a look at the following resources:
+## Tech Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Ripyard is built using the following technologies:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+- Front-end: Next.js 13, Chakra UI, TypeScript
 
-## Deploy on Vercel
+- Back-end: Firebase (Authentication and Cloud Storage)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Installation and Setup
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+To run Ripyard locally on your machine, follow these steps:
+
+1. Clone the repository: `git clone https://github.com/your-username/ripyard.git`
+
+2. Install dependencies: `npm install`
+
+3. Create a Firebase project and set up Firebase Authentication and Cloud Storage.
+
+4. Set up environment variables for Firebase configuration in a `.env` file, following the `.env.example` file.
+
+5. Run the development server: `npm run dev`
+
+6. Open `http://localhost:3000` in your web browser.
+
+## Contact
+
+For any inquiries or feedback, please contact us at ripyard.oficial@gmail.com.
+
+---
+
+Thank you for your interest in Ripyard! We hope that this platform helps you and your friends preserve cherished memories for eternity.
