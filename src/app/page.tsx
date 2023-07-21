@@ -19,6 +19,7 @@ export default function Page() {
     message: '',
     messageId: '',
     reactions: [],
+    profileImageURL: '/ripyard-logo.png'
   };
 
   const handleButton = () => {
@@ -62,7 +63,7 @@ export default function Page() {
             ...mockMsg,
             message: 'Write your most memorable phrases here!',
             createdAt: Timestamp.fromDate(new Date()),
-            author: 'Pedro',
+            author: 'Mariana',
           }}
           img={'/ripyard-logo.png'}
           isFromUser={false}
@@ -73,7 +74,7 @@ export default function Page() {
             message:
               'Create a group, add your friends, and save your moments in text!',
             createdAt: Timestamp.fromDate(new Date()),
-            author: 'Diego',
+            author: 'Jonny',
           }}
           img={'/ripyard-logo.png'}
           isFromUser={true}

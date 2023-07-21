@@ -1,25 +1,29 @@
 'use client';
 /* eslint-disable @next/next/no-img-element */
-import { CustomButton, CustomInput, LoadingButton } from "@/components";
+import { CustomInput, LoadingButton } from "@/components";
 import { User } from "@/interfaces";
 import { useUser } from "@/store";
-import { Box, Container, Flex, Stack, Text, useToast } from "@chakra-ui/react";
+import { Box, Container, Flex, Stack, Text, useMediaQuery, useToast } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from "@/config/firebase";
 import { doc, updateDoc } from "firebase/firestore";
 import { EditIcon } from "@chakra-ui/icons";
+import { formatDateOnlyDays } from "@/utils";
 
 export default function Page() {
-  const { user } = useUser();
+  const { user, setUser } = useUser();
   const toast = useToast();
   const [localUser, setLocalUser] = useState<User>(user);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
+  const [staticName, setStaticName] = useState(user.username);
+  const [isMobile] = useMediaQuery('(max-width: 769px)');
 
   useEffect(() => {
     setLocalUser(user);
+    setStaticName(user.username);
   }, [user]);
 
   const setName = (name: string) => setLocalUser({ ...localUser, username: name });
@@ -36,9 +40,10 @@ export default function Page() {
       await updateDoc(userRef, { profileImageURL: downloadURL });
 
       setLocalUser({ ...localUser, profileImageURL: downloadURL });
+      setUser({ ...user, profileImageURL: downloadURL });
     } catch (error) {
       toast({
-        description: 'Erro ao realizar upload de imagem',
+        description: 'Sorry, there was an error uploading the image.',
         status: 'error',
         duration: 9000,
         isClosable: true,
@@ -76,15 +81,18 @@ export default function Page() {
         username: localUser.username
       });
 
+      setStaticName(localUser.username);
+      setUser({ ...user, username: localUser.username });
+
       toast({
-        description: 'Informações salvas com sucess!',
+        description: 'Information successfully saved!',
         status: 'success',
         duration: 9000,
         isClosable: true,
       });
     } catch (error) {
       toast({
-        description: 'Erro ao salvar novas configurações',
+        description: 'Sorry, there was an error saving your information.',
         status: 'error',
         duration: 9000,
         isClosable: true,
@@ -95,20 +103,36 @@ export default function Page() {
 
   return (
     <Box display='flex' alignItems='center' justifyContent='center' height='calc(90vh - 30px)'>
-      <Container backgroundColor='gray.background' style={{ boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)', borderRadius: 10, padding: 15 }}>
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+      <Container
+        backgroundColor='gray.background'
+        style={{
+          boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+          borderRadius: 10,
+          padding: 15,
+          width: '100%',
+          maxWidth: '600px',
+        }}
+      >
+        <Flex
+          direction={['column', 'column', 'row']}
+          alignItems={'center'}
+          justifyContent={['center', 'space-between']}
+        >
           <div
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
-            style={{ position: 'relative' }}
+            style={{
+              position: 'relative',
+              marginBottom: isMobile ? 20 : 0,
+            }}
           >
             {localUser.profileImageURL && (
               <img
                 src={localUser.profileImageURL}
                 alt='Profile'
-                height={100}
-                width={100}
-                style={{ borderRadius: '50%' }}
+                height={150}
+                width={150}
+                style={{ borderRadius: '50%', boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)' }}
               />
             )}
             {isHovering && (
@@ -133,7 +157,16 @@ export default function Page() {
             )}
           </div>
           <Stack spacing={4}>
-            <Text color='dark.grpBtn' fontWeight={600} >Hello, {localUser.username}!</Text>
+            <Text color='dark.grpBtn' fontWeight={600}>
+              Hello, {staticName}!
+            </Text>
+            {
+              user.createdAt && (
+                <Text color='dark.grpBtn' fontWeight={600}>
+                  Account created at: {formatDateOnlyDays(user?.createdAt)}
+                </Text>
+              )
+            }
             <CustomInput placeholder='Name' value={localUser.username} setValue={setName} />
             <CustomInput placeholder='Email' value={localUser.email} setValue={() => {}} isDisabled={true} />
             <input
@@ -145,7 +178,7 @@ export default function Page() {
             />
             <LoadingButton isLoading={isLoading} text='Save' onClick={handleSave} />
           </Stack>
-        </div>
+        </Flex>
       </Container>
     </Box>
   )
