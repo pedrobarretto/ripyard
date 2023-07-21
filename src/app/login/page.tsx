@@ -11,14 +11,15 @@ import {
 } from '@chakra-ui/react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useState } from 'react';
-import { auth, db } from '../../config/firebase';
+import { auth, db, storage } from '../../config/firebase';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/store';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { User } from '@/interfaces';
 import Link from 'next/link';
 import { FirebaseError } from 'firebase/app';
-import { mapErrorCodeToMessage } from '@/utils';
+import { generateUserProfileImage, mapErrorCodeToMessage } from '@/utils';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 export default function Page() {
   const [email, setEmail] = useState('');
@@ -36,8 +37,35 @@ export default function Page() {
     try {
       const info = await signInWithEmailAndPassword(auth, email, password);
       const user = await getDoc(doc(db, 'users', info.user.uid));
+      let downloadURL = '';
       if (user.exists()) {
-        setUser(user.data() as User);
+        const data = user.data() as User;
+        if (!data.profileImageURL) {
+          const profileImageURL = await generateUserProfileImage(data.username);
+          const storageRef = ref(storage, `profileImages/${info.user.uid}`);
+          if (profileImageURL) {
+            await uploadBytes(storageRef, profileImageURL);
+          }
+          
+          downloadURL = await getDownloadURL(storageRef);
+
+          await updateDoc(doc(db, 'users', data.id), {
+            profileImageURL: downloadURL
+          });
+
+          setUser({ ...data, profileImageURL: downloadURL });
+        }
+
+        setUser({
+          ...user,
+          createdAt: data.createdAt,
+          email: data.email,
+          groups: data.groups,
+          id: data.id,
+          username: data.username,
+          profileImageURL: downloadURL
+        });
+
       } else {
         setUser({} as User);
       }
