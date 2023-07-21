@@ -54,6 +54,7 @@ export function MessagesContainer() {
         createdAt: Timestamp.fromDate(new Date()),
         messageId: newMessageRef.key || 'none',
         reactions: [],
+        profileImageURL: user.profileImageURL ? user.profileImageURL : '/ripyard-logo.png'
       };
       await set(newMessageRef, newMessage);
       setMsg('');
@@ -88,7 +89,7 @@ export function MessagesContainer() {
         ) : (
           filteredMessages.map((message) => (
             <Phrase
-              img={'/ripyard-logo.png'}
+              img={message.profileImageURL ? message.profileImageURL : '/ripyard-logo.png'}
               isFromUser={message.author === user.username}
               message={message}
               key={message.messageId}

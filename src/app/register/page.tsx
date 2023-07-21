@@ -11,12 +11,13 @@ import {
 } from '@chakra-ui/react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { useState } from 'react';
-import { auth, db } from '../../config/firebase';
+import { auth, db, storage } from '../../config/firebase';
 import { useRouter } from 'next/navigation';
 import { Timestamp, doc, setDoc } from 'firebase/firestore';
 import { useUser } from '@/store';
 import { FirebaseError } from 'firebase/app';
-import { mapErrorCodeToMessage } from '@/utils';
+import { generateUserProfileImage, mapErrorCodeToMessage } from '@/utils';
+import { uploadBytes, getDownloadURL, ref } from 'firebase/storage';
 
 export default function Page() {
   const [email, setEmail] = useState('');
@@ -34,6 +35,14 @@ export default function Page() {
     setIsLoading(true);
     try {
       const info = await createUserWithEmailAndPassword(auth, email, password);
+
+      const profileImageURL = await generateUserProfileImage(username);
+      const storageRef = ref(storage, `profileImages/${info.user.uid}`);
+      if (profileImageURL) {
+        await uploadBytes(storageRef, profileImageURL);
+      }
+      
+      const downloadURL = await getDownloadURL(storageRef);
       const createdAt = Timestamp.fromDate(new Date());
       await setDoc(doc(db, 'users', info.user.uid), {
         email,
@@ -41,8 +50,9 @@ export default function Page() {
         groups: [],
         createdAt,
         id: info.user.uid,
+        profileImageURL: downloadURL
       });
-      setUser({ email, username, createdAt, groups: [], id: info.user.uid });
+      setUser({ email, username, createdAt, groups: [], id: info.user.uid, profileImageURL: downloadURL });
       setRawUser(info.user);
       router.push('/');
     } catch (error) {

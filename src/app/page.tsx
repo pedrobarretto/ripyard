@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 import { CustomButton, Phrase } from '@/components';
 import { Message } from '@/interfaces';
@@ -18,6 +19,7 @@ export default function Page() {
     message: '',
     messageId: '',
     reactions: [],
+    profileImageURL: '/ripyard-logo.png'
   };
 
   const handleButton = () => {
@@ -53,7 +55,7 @@ export default function Page() {
         color='gray.text'
         textAlign='center'
       >
-        Eternalize your own and your friends&apos; phrases on the tombstone!
+        Eternalize yours and your friends&apos; phrases on the tombstone!
       </Text>
       <Stack spacing={4} mt={8} marginBottom={4}>
         <Phrase
@@ -61,7 +63,7 @@ export default function Page() {
             ...mockMsg,
             message: 'Write your most memorable phrases here!',
             createdAt: Timestamp.fromDate(new Date()),
-            author: 'Pedro',
+            author: 'Mariana',
           }}
           img={'/ripyard-logo.png'}
           isFromUser={false}
@@ -72,7 +74,7 @@ export default function Page() {
             message:
               'Create a group, add your friends, and save your moments in text!',
             createdAt: Timestamp.fromDate(new Date()),
-            author: 'Diego',
+            author: 'Jonny',
           }}
           img={'/ripyard-logo.png'}
           isFromUser={true}

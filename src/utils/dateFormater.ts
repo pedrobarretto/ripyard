@@ -33,3 +33,15 @@ export function formatDateFromFirebase(timestamp: Timestamp) {
 
   return formattedDate;
 }
+
+export function formatDateOnlyDays(timestamp: Timestamp) {
+  const options: Intl.DateTimeFormatOptions = {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  };
+
+  const formattedDate = timestamp.toDate().toLocaleDateString('pt-BR', options);
+
+  return formattedDate;
+}
