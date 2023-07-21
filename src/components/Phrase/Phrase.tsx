@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 import { Message } from '@/interfaces';
 
@@ -7,7 +8,7 @@ interface PhraseProps {
   message: Message;
 }
 
-export function Phrase({ message, img, isFromUser }: PhraseProps) {
+export function Phrase({ message, img }: PhraseProps) {
   return (
     <div
       style={{
@@ -22,7 +23,7 @@ export function Phrase({ message, img, isFromUser }: PhraseProps) {
         gap: 10,
       }}
     >
-      <img src={img} alt={'Imagem do autor da frase'} width={40} height={40} />
+      <img src={img} alt={'Imagem do autor da frase'} width={50} height={50} style={{ borderRadius: '50%' }} />
       <div
         style={{
           display: 'flex',
@@ -41,11 +42,11 @@ export function Phrase({ message, img, isFromUser }: PhraseProps) {
             justifyContent: 'center',
             flexDirection: 'column',
             padding: 10,
-            overflowWrap: 'break-word', // Break long words
+            overflowWrap: 'break-word',
             wordWrap: 'break-word',
             wordBreak: 'break-word',
             hyphens: 'auto',
-            maxWidth: '100%', // Limit the width of the message container
+            maxWidth: '100%',
           }}
         >
           <span>{message.message}</span>

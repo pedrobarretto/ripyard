@@ -8,6 +8,7 @@ export interface Message {
   createdAt: Timestamp;
   reactions: Reactions[];
   messageId: string;
+  profileImageURL: string;
 }
 
 export interface Reactions {

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 import React, { useEffect } from 'react';
 import Link from 'next/link';
@@ -40,6 +41,7 @@ export function NavBar() {
         const userData = (
           await getDoc(doc(db, 'users', user.uid))
         ).data() as User;
+        console.log(userData);
         setUser(userData);
 
         const grpPromises = userData.groups.map(async (group) => {
@@ -94,6 +96,7 @@ export function NavBar() {
     });
 
     return () => unsubscribe();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handlesignOut = () => {
@@ -176,6 +179,7 @@ export function NavBar() {
             />
             <MenuList>
               <MenuItem onClick={() => router.push('/graveyard')}>Groups</MenuItem>
+              <MenuItem onClick={() => router.push('/settings')}>Settings</MenuItem>
               <MenuItem onClick={handlesignOut}>Logout</MenuItem>
             </MenuList>
           </Menu>
