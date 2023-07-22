@@ -147,6 +147,11 @@ export default function Page() {
           isLoading={isLoading}
         />
         <div style={{ textAlign: 'center' }}>
+          <Link href='/forgot-password' passHref>
+            <Text _hover={{ textDecoration: 'underline' }}>I forget my password</Text>
+          </Link>
+        </div>
+        <div style={{ textAlign: 'center' }}>
           <p>Don&apos;t have an account yet?</p>
           <Link href='/register' passHref>
             <Text _hover={{ textDecoration: 'underline' }}>Register</Text>
