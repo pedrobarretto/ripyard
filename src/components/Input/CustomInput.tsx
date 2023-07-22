@@ -1,5 +1,6 @@
 'use client';
 import { Input, ResponsiveValue } from '@chakra-ui/react';
+import { HTMLInputTypeAttribute } from 'react';
 
 interface CustomInputProps {
   placeholder: string;
@@ -7,6 +8,7 @@ interface CustomInputProps {
   setValue: (x: any) => void;
   width?: ResponsiveValue<string>;
   isDisabled?: boolean;
+  type?: HTMLInputTypeAttribute;
 }
 
 export function CustomInput({
@@ -14,7 +16,8 @@ export function CustomInput({
   setValue,
   value,
   width,
-  isDisabled
+  isDisabled,
+  type,
 }: CustomInputProps) {
   return (
     <Input
@@ -25,6 +28,7 @@ export function CustomInput({
       value={value}
       onChange={(event) => setValue(event.target.value)}
       isDisabled={isDisabled ? isDisabled : false}
+      type={type ? type : 'text'}
     />
   );
 }
